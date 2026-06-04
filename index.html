@@ -1,0 +1,3549 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configurador Megasoft VPOS (VPosUniversal)</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-primary: #0b0f19;
+            --bg-secondary: #111827;
+            --bg-tertiary: #1f2937;
+            --glass-bg: rgba(17, 24, 39, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            
+            --primary: #8b5cf6;
+            --primary-glow: rgba(139, 92, 246, 0.15);
+            --primary-hover: #a78bfa;
+            
+            --secondary: #06b6d4;
+            --secondary-glow: rgba(6, 182, 212, 0.15);
+            
+            --accent: #10b981;
+            --accent-glow: rgba(16, 185, 129, 0.15);
+            
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --text-dark: #6b7280;
+            
+            --sidebar-width: 420px;
+            --border-radius: 16px;
+            --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-main);
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Scrollbar custom styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.1);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* App Header */
+        header {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--glass-border);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+            flex-shrink: 0;
+        }
+
+        .header-title-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 1.2rem;
+            color: white;
+            box-shadow: 0 0 20px var(--primary-glow);
+        }
+
+        .header-text h1 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            background: linear-gradient(to right, #ffffff, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header-text p {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn-upload-container {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            color: var(--text-main);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition);
+        }
+
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), #7c3aed);
+            border: none;
+            box-shadow: 0 4px 12px var(--primary-glow);
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, var(--primary-hover), var(--primary));
+            box-shadow: 0 6px 16px rgba(139, 92, 246, 0.3);
+        }
+
+        /* Hidden file input */
+        .file-input {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        /* Main Workspace Layout */
+        .workspace {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Left Side: Interactive Manual */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--glass-border);
+            overflow-y: auto;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .sidebar-section-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        /* Stepper Manual Cards */
+        .step-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--border-radius);
+            padding: 1.25rem;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .step-card::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 4px;
+            background: transparent;
+            transition: var(--transition);
+        }
+
+        .step-card:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.15);
+            transform: translateX(3px);
+        }
+
+        .step-card.active {
+            background: rgba(139, 92, 246, 0.05);
+            border-color: rgba(139, 92, 246, 0.3);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .step-card.active::before {
+            background: var(--primary);
+        }
+
+        .step-num {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--text-main);
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            font-size: 0.8rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            transition: var(--transition);
+        }
+
+        .step-card.active .step-num {
+            background: var(--primary);
+            box-shadow: 0 0 10px var(--primary-glow);
+        }
+
+        .step-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: white;
+        }
+
+        .step-desc {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        .step-image {
+            margin-top: 0.75rem;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            max-width: 100%;
+            height: auto;
+            transition: var(--transition);
+        }
+
+        .step-image:hover {
+            transform: scale(1.02);
+            border-color: var(--primary);
+        }
+
+        .alert-box {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            padding: 10px;
+            border-radius: 8px;
+            color: #fca5a5;
+            font-size: 0.8rem;
+            margin-top: 8px;
+        }
+
+        .alert-box-tip {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            padding: 10px;
+            border-radius: 8px;
+            color: #a7f3d0;
+            font-size: 0.8rem;
+            margin-top: 8px;
+        }
+
+        /* Right Side: Configuration Zone */
+        .config-zone {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            background: var(--bg-primary);
+        }
+
+        /* Tab bar */
+        .tabs {
+            display: flex;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--glass-border);
+            padding: 0 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            padding: 1.25rem 1.5rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            position: relative;
+            transition: var(--transition);
+        }
+
+        .tab-btn:hover {
+            color: white;
+        }
+
+        .tab-btn.active {
+            color: var(--primary);
+        }
+
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--primary);
+            box-shadow: 0 0 10px var(--primary);
+        }
+
+        /* Split content: Forms and Live Code Preview */
+        .workspace-split {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* Forms Pane */
+        .forms-pane {
+            flex: 1;
+            overflow-y: auto;
+            padding: 2rem;
+            border-right: 1px solid var(--glass-border);
+        }
+
+        .form-section {
+            display: none;
+        }
+
+        .form-section.active {
+            display: block;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .form-group-full {
+            grid-column: 1 / -1;
+        }
+
+        .section-header {
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .section-header h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: white;
+        }
+
+        .section-header p {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        /* Form elements */
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            background: rgba(255, 255, 255, 0.01);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            padding: 12px;
+            border-radius: 10px;
+            transition: var(--transition);
+        }
+
+        .form-group:focus-within {
+            border-color: var(--primary);
+            background: rgba(139, 92, 246, 0.02);
+        }
+
+        .form-group label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+
+        .form-group input, .form-group select {
+            background: var(--bg-secondary);
+            border: 1px solid var(--glass-border);
+            color: white;
+            padding: 10px 12px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-family: inherit;
+            outline: none;
+            transition: var(--transition);
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
+        }
+
+        .form-group-desc {
+            font-size: 0.75rem;
+            color: var(--text-dark);
+        }
+
+        /* Toggle switches */
+        .toggle-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 24px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--bg-tertiary);
+            transition: .3s;
+            border-radius: 24px;
+            border: 1px solid var(--glass-border);
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .3s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--primary);
+        }
+
+        input:focus + .slider {
+            box-shadow: 0 0 1px var(--primary);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(20px);
+        }
+
+        /* HTML5 Native Accordion styling */
+        details.advanced-settings {
+            grid-column: 1 / -1;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-top: 1rem;
+            transition: var(--transition);
+        }
+
+        details.advanced-settings[open] {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(139, 92, 246, 0.2);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+
+        details.advanced-settings summary {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            cursor: pointer;
+            user-select: none;
+            outline: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        details.advanced-settings summary::-webkit-details-marker {
+            display: none;
+        }
+
+        details.advanced-settings summary::before {
+            content: '▶';
+            font-size: 0.7rem;
+            display: inline-block;
+            transition: transform 0.2s ease;
+            color: var(--primary);
+        }
+
+        details.advanced-settings[open] summary::before {
+            transform: rotate(90deg);
+        }
+
+        details.advanced-settings summary:hover {
+            color: white;
+        }
+
+        /* Preview Pane & Mode Switcher */
+        .preview-pane {
+            width: 480px;
+            background: var(--bg-secondary);
+            border-left: 1px solid var(--glass-border);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .preview-header {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--glass-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        .preview-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-main);
+        }
+
+        .view-toggle {
+            display: flex;
+            background: var(--bg-primary);
+            padding: 2px;
+            border-radius: 6px;
+            border: 1px solid var(--glass-border);
+        }
+
+        .view-toggle .toggle-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-family: inherit;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .view-toggle .toggle-btn:hover {
+            color: white;
+        }
+
+        .view-toggle .toggle-btn.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 2px 6px rgba(139, 92, 246, 0.25);
+        }
+
+        .preview-content {
+            flex: 1;
+            overflow: auto;
+            padding: 1.5rem;
+            background: #060913;
+            position: relative;
+        }
+
+        pre {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.82rem;
+            line-height: 1.5;
+            color: #d1d5db;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        /* INI Syntax Highlighting */
+        .ini-comment { color: #6b7280; font-style: italic; }
+        .ini-section { color: #a78bfa; font-weight: 600; }
+        .ini-key { color: #f472b6; }
+        .ini-value { color: #22d3ee; }
+        .ini-equal { color: #9ca3af; }
+
+        .preview-actions {
+            padding: 1rem;
+            border-top: 1px solid var(--glass-border);
+            background: var(--bg-secondary);
+            display: flex;
+            gap: 10px;
+        }
+
+        .preview-actions .btn {
+            flex: 1;
+            justify-content: center;
+        }
+
+        /* Notification Toast */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: var(--accent);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 100;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            body {
+                overflow-y: auto;
+                height: auto;
+            }
+            .workspace {
+                flex-direction: column;
+                height: auto;
+                overflow: visible;
+            }
+            .sidebar {
+                width: 100%;
+                height: auto;
+                border-right: none;
+                border-bottom: 1px solid var(--glass-border);
+            }
+            .workspace-split {
+                flex-direction: column;
+                height: auto;
+            }
+            .preview-pane {
+                width: 100%;
+                border-left: none;
+                border-top: 1px solid var(--glass-border);
+                height: 400px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <div class="header-title-container">
+            <div class="logo">M</div>
+            <div class="header-text">
+                <h1>Megasoft VPOS Configurator</h1>
+                <p>Centro de Instalación Interactiva e Integración local de VPosUniversal</p>
+            </div>
+        </div>
+        <div class="header-actions">
+            <div class="btn-upload-container">
+                <button class="btn">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+                    Importar .ini Existente
+                    <input type="file" class="file-input" id="ini-file-input" accept=".ini">
+                </button>
+            </div>
+            <button class="btn btn-primary" onclick="downloadAllFiles()">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                Descargar Todo
+            </button>
+        </div>
+    </header>
+
+    <!-- Workspace -->
+    <div class="workspace">
+        
+        <!-- Left Sidebar: Interactive Manual -->
+        <div class="sidebar">
+            <div class="sidebar-section-title">Guía de Instalación</div>
+            
+            <div class="step-card active" onclick="activateStep(1, 'vposconf')">
+                <span class="step-num">1</span>
+                <h4 class="step-title">Instalación Base del VPOS</h4>
+                <p class="step-desc">
+                    Descomprime la última versión del paquete ZIP de VPOS y renombra la carpeta resultante a <strong>VPosUniversal</strong>. Coloca la carpeta directamente en la raíz de tu disco C: para obtener la ruta <code>C:\VPosUniversal</code>.
+                </p>
+                <img class="step-image" src="./page_1_img_1_X5.png" alt="ZIP Versión">
+                <img class="step-image" src="./page_1_img_2_X7.png" alt="Directorio VPosUniversal">
+            </div>
+
+            <div class="step-card" onclick="activateStep(2, 'vposconf')">
+                <span class="step-num">2</span>
+                <h4 class="step-title">Configuración Principal (vposconf.ini)</h4>
+                <p class="step-desc">
+                    Define la IP/Host y puerto de Megasoft, asocia el ID de terminal único (VTID) de la caja, y establece el puerto COM (ej. COM9) o configuración USB del Pinpad contactless Verifone Engage.
+                </p>
+                <div class="alert-box-tip">💡 Al hacer clic en este paso, se abrirá el formulario de vposconf.ini en el panel derecho.</div>
+            </div>
+
+            <div class="step-card" onclick="activateStep(3, 'vposuniversal')">
+                <span class="step-num">3</span>
+                <h4 class="step-title">Parámetros del Sistema (vposuniversal.ini)</h4>
+                <p class="step-desc">
+                    Configura el cierre del voucher de transacciones (desactiva el listado detallado poniendo <code>imprimirTransacciones=0</code>) y habilita o deshabilita medios de cobro como Tarjetas de débito/crédito, Cashea, Lysto y C2P.
+                </p>
+            </div>
+
+            <div class="step-card" onclick="activateStep(4, 'vposo2d')">
+                <span class="step-num">4</span>
+                <h4 class="step-title">Pago Móvil e Integración (vposo2d.ini)</h4>
+                <p class="step-desc">
+                    Ajusta los bancos disponibles para C2P/P2C indicando el código del banco, teléfono y nombre de la institución (por ejemplo, <code>0115#04140000000,Exterior</code>), y gestiona el flujo de OTP.
+                </p>
+            </div>
+
+            <div class="step-card" onclick="activateStep(5, 'vposuniversal')">
+                <span class="step-num">5</span>
+                <h4 class="step-title">Inicialización del Servicio</h4>
+                <p class="step-desc">
+                    Para iniciar el servicio REST, debes ejecutar como administrador los archivos batch situados en la raíz del VPOS:
+                    <br>1. <code>InstalacionVPOSREST.bat</code>
+                    <br>2. <code>InstalarMonitorVposRest.bat</code>
+                </p>
+                <img class="step-image" src="./page_5_img_1_X18.png" alt="Archivos Batch">
+            </div>
+
+            <div class="step-card" onclick="activateStep(6, 'vposconf')">
+                <span class="step-num">6</span>
+                <h4 class="step-title">Test de WebServer y Red</h4>
+                <p class="step-desc">
+                    Abre en tu navegador la página de pruebas local:
+                    <code>C:\VPosUniversal\rest\html\TestVPosREST.html</code>
+                    Verás el panel de mandos para pruebas del VPOS.
+                </p>
+                <img class="step-image" src="./page_5_img_2_X19.png" alt="Test de VPosWebServer">
+            </div>
+
+            <div class="step-card" onclick="activateStep(7, 'vposconf')">
+                <span class="step-num">7</span>
+                <h4 class="step-title">Carga de Llaves e Impresión</h4>
+                <p class="step-desc">
+                    Dirígete a la sección <strong>Administrativa</strong>, haz clic en <strong>Misceláneos</strong> y realiza un <strong>Test de Comunicación (6)</strong>. Si responde OK, haz el <strong>Intercambio de Llaves (5)</strong>. Configura la impresora en la opción <strong>(1)</strong>.
+                </p>
+                <img class="step-image" src="./page_6_img_1_X22.png" alt="Misceláneos">
+                <img class="step-image" src="./page_6_img_2_X23.png" alt="Seleccionar Impresora">
+            </div>
+
+            <div class="step-card" onclick="activateStep(8, 'vposconf')">
+                <span class="step-num">8</span>
+                <h4 class="step-title">Pruebas Transaccionales y Control</h4>
+                <p class="step-desc">
+                    Realiza un cobro simulado de 1.0 en la sección <strong>Transaccionales</strong>.
+                    Para arrancar o detener manualmente el servicio local de Java, utiliza respectivamente <code>VposREST.bat</code> y <code>CerrarJVM.bat</code>.
+                </p>
+                <img class="step-image" src="./page_7_img_1_X26.png" alt="Módulo Transaccional">
+                <div class="alert-box">⚠️ Asegúrate de reiniciar tu equipo de prueba tras el ajuste para verificar que el servicio inicie automáticamente sin emitir ventanas de alerta.</div>
+            </div>
+        </div>
+
+        <!-- Right Side: Config Zone -->
+        <div class="config-zone">
+            <!-- Tabs -->
+            <div class="tabs">
+                <button class="tab-btn active" id="tab-vposconf" onclick="switchTab('vposconf')">vposconf.ini</button>
+                <button class="tab-btn" id="tab-vposuniversal" onclick="switchTab('vposuniversal')">vposuniversal.ini</button>
+                <button class="tab-btn" id="tab-vposo2d" onclick="switchTab('vposo2d')">vposo2d.ini</button>
+            </div>
+
+            <!-- Split Pane: Form / Code Preview -->
+            <div class="workspace-split">
+                
+                <!-- Forms Panel -->
+                <div class="forms-pane">
+                    
+                    <!-- FORM 1: vposconf.ini -->
+                    <div class="form-section active" id="form-vposconf">
+                        <div class="section-header">
+                            <h3>Parámetros de Servidor y Conectividad</h3>
+                            <p>Define cómo se comunica el terminal con el Merchant Server de Megasoft y el Pinpad</p>
+                        </div>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="conf-server-host">Host del Servidor</label>
+                                <input type="text" id="conf-server-host" oninput="updateField('vposconf', 'server', 'host', this.value)">
+                                <div class="form-group-desc">Host SSL del Merchant Server de Megasoft</div>
+                            </div>
+                            <div class="form-group">
+                                <label for="conf-server-port">Puerto del Servidor</label>
+                                <input type="number" id="conf-server-port" oninput="updateField('vposconf', 'server', 'port', this.value)">
+                                <div class="form-group-desc">Puerto TCP de conexión (por defecto 4763)</div>
+                            </div>
+                            <div class="form-group">
+                                <label for="conf-vtid-vtid">VTID de Caja (Terminal ID)</label>
+                                <input type="text" id="conf-vtid-vtid" oninput="updateField('vposconf', 'vtid', 'vtid', this.value)">
+                                <div class="form-group-desc">Identificador VTID asignado por el banco/proveedor</div>
+                            </div>
+                            <div class="form-group">
+                                <label for="conf-vtid-id">Número de Caja / ID</label>
+                                <input type="text" id="conf-vtid-id" oninput="updateField('vposconf', 'vtid', 'id', this.value)">
+                                <div class="form-group-desc">Código corto identificador de caja (ej. 01)</div>
+                            </div>
+                            <div class="form-group">
+                                <label for="conf-pinpad-puerto">Puerto COM del Pinpad</label>
+                                <select id="conf-pinpad-puerto" onchange="updateField('vposconf', 'pinpad', 'puerto', this.value)">
+                                    <option value="COM1">COM1</option>
+                                    <option value="COM2">COM2</option>
+                                    <option value="COM3">COM3</option>
+                                    <option value="COM4">COM4</option>
+                                    <option value="COM5">COM5</option>
+                                    <option value="COM6">COM6</option>
+                                    <option value="COM7">COM7</option>
+                                    <option value="COM8">COM8</option>
+                                    <option value="COM9" selected>COM9</option>
+                                    <option value="COM10">COM10</option>
+                                    <option value="COM11">COM11</option>
+                                    <option value="COM12">COM12</option>
+                                    <option value="USB">USB</option>
+                                </select>
+                                <div class="form-group-desc">Puerto físico asignado al Pinpad</div>
+                            </div>
+                        </div>
+
+                        <div class="section-header" style="margin-top: 2rem;">
+                            <h3>Parámetros Pinpad Verifone (Contactless)</h3>
+                            <p>Configuraciones de comunicación segura para dispositivos Verifone Engage</p>
+                        </div>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="conf-verifone-modelo">Modelo Pinpad</label>
+                                <input type="text" id="conf-verifone-modelo" oninput="updateField('vposconf', 'pinpad-verifone', 'modelo', this.value)">
+                            </div>
+                            <div class="form-group">
+                                <label for="conf-verifone-puerto">Puerto Verifone</label>
+                                <input type="text" id="conf-verifone-puerto" oninput="updateField('vposconf', 'pinpad-verifone', 'puerto', this.value)">
+                            </div>
+                            <div class="form-group">
+                                <label for="conf-verifone-comandos">Comandos Nuevos</label>
+                                <select id="conf-verifone-comandos" onchange="updateField('vposconf', 'pinpad-verifone', 'comandosNuevos', this.value)">
+                                    <option value="0">0 - Desactivado</option>
+                                    <option value="1">1 - Activado</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="conf-verifone-pinblock">Tipo Pinblock</label>
+                                <input type="text" id="conf-verifone-pinblock" oninput="updateField('vposconf', 'pinpad-verifone', 'tipoPinblock', this.value)">
+                            </div>
+                            <div class="form-group">
+                                <label for="conf-verifone-sensible">Datos Sensibles Encriptados</label>
+                                <select id="conf-verifone-sensible" onchange="updateField('vposconf', 'pinpad-verifone', 'dataSensibleEncriptada', this.value)">
+                                    <option value="0">0 - No</option>
+                                    <option value="1">1 - Sí</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="conf-voucher-copias">Número de Copias Voucher</label>
+                                <input type="number" id="conf-voucher-copias" oninput="updateField('vposconf', 'voucher', 'copias', this.value)">
+                                <div class="form-group-desc">El manual aconseja 1 para ahorrar papel fiscal</div>
+                            </div>
+                        </div>
+
+                        <!-- Accordion for Advanced Settings -->
+                        <details class="advanced-settings">
+                            <summary>Campos Adicionales / Avanzados (Voucher Datos)</summary>
+                            <div class="form-grid" style="margin-top: 1rem;">
+                                <div class="form-group">
+                                    <label for="conf-voucher-tienda">Nombre de Tienda</label>
+                                    <input type="text" id="conf-voucher-tienda" oninput="updateField('vposconf', 'voucher', 'tienda', this.value)">
+                                </div>
+                                <div class="form-group">
+                                    <label for="conf-voucher-rif">Línea de RIF</label>
+                                    <input type="text" id="conf-voucher-rif" oninput="updateField('vposconf', 'voucher', 'LineaEncabezado4', this.value)">
+                                </div>
+                                <div class="form-group">
+                                    <label for="conf-voucher-telf">Línea de Teléfono</label>
+                                    <input type="text" id="conf-voucher-telf" oninput="updateField('vposconf', 'voucher', 'LineaEncabezado7', this.value)">
+                                </div>
+                                <div class="form-group">
+                                    <label for="conf-voucher-nota">Leyenda Especial</label>
+                                    <input type="text" id="conf-voucher-nota" oninput="updateField('vposconf', 'voucher', 'LineaEncabezado8', this.value)">
+                                </div>
+                            </div>
+                        </details>
+                    </div>
+
+                    <!-- FORM 2: vposuniversal.ini -->
+                    <div class="form-section" id="form-vposuniversal">
+                        <div class="section-header">
+                            <h3>Cierre de Lote y Voucher</h3>
+                            <p>Parámetros que controlan el cierre y la impresión consolidada de ventas</p>
+                        </div>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="univ-cierre-imp">Imprimir Detalle de Transacciones</label>
+                                <select id="univ-cierre-imp" onchange="updateField('vposuniversal', 'cierrevoucher', 'imprimirTransacciones', this.value)">
+                                    <option value="1">1 - Imprimir Detalle</option>
+                                    <option value="0">0 - No Imprimir Detallado</option>
+                                </select>
+                                <div class="form-group-desc">Poner en 0 para no imprimir todas las transacciones individuales</div>
+                            </div>
+                        </div>
+
+                        <div class="section-header" style="margin-top: 2rem;">
+                            <h3>Transacciones Permitidas en Pantalla</h3>
+                            <p>Activa o desactiva qué botones de cobro se muestran en el menú de VPOS</p>
+                        </div>
+                        <div class="form-grid">
+                            <div class="form-group toggle-container">
+                                <div>
+                                    <label>Pago con Tarjeta</label>
+                                    <div class="form-group-desc">Permite pagos con tarjetas de débito/crédito</div>
+                                </div>
+                                <label class="switch">
+                                    <input type="checkbox" id="univ-tx-tarjeta" onchange="updateField('vposuniversal', 'transaccionespermitidas', 'activo0', this.checked ? '1' : '0')">
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+
+                            <div class="form-group toggle-container">
+                                <div>
+                                    <label>Dar Vuelto / Cambio</label>
+                                    <div class="form-group-desc">Habilita dar vuelto al cliente</div>
+                                </div>
+                                <label class="switch">
+                                    <input type="checkbox" id="univ-tx-cambio" onchange="updateField('vposuniversal', 'transaccionespermitidas', 'activo1', this.checked ? '1' : '0')">
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+
+                            <div class="form-group toggle-container">
+                                <div>
+                                    <label>Otros Medios</label>
+                                    <div class="form-group-desc">Activa el soporte para otros métodos alternativos</div>
+                                </div>
+                                <label class="switch">
+                                    <input type="checkbox" id="univ-tx-otros" onchange="updateField('vposuniversal', 'transaccionespermitidas', 'activo17', this.checked ? '1' : '0')">
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="section-header" style="margin-top: 2rem;">
+                            <h3>Detalle de Medios de Pago</h3>
+                            <p>Define la disponibilidad de canales específicos en la interfaz de pago</p>
+                        </div>
+                        <div class="form-grid">
+                            <div class="form-group toggle-container">
+                                <div>
+                                    <label>Medio Tarjeta</label>
+                                    <div class="form-group-desc">Visualizar opción Tarjeta</div>
+                                </div>
+                                <label class="switch">
+                                    <input type="checkbox" id="univ-medio-tarjeta" onchange="updateField('vposuniversal', 'COMPRA_MEDIOS_PAGO', 'activo0', this.checked ? '1' : '0')">
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+
+                            <div class="form-group toggle-container">
+                                <div>
+                                    <label>Medio C2P (Pago Móvil a Comercio)</label>
+                                    <div class="form-group-desc">Cobros directos con clave C2P</div>
+                                </div>
+                                <label class="switch">
+                                    <input type="checkbox" id="univ-medio-c2p" onchange="updateField('vposuniversal', 'COMPRA_MEDIOS_PAGO', 'activo2', this.checked ? '1' : '0')">
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+
+                            <div class="form-group toggle-container">
+                                <div>
+                                    <label>Medio P2C (Pago Móvil a Persona)</label>
+                                    <div class="form-group-desc">Transferencias móviles P2C</div>
+                                </div>
+                                <label class="switch">
+                                    <input type="checkbox" id="univ-medio-p2c" onchange="updateField('vposuniversal', 'COMPRA_MEDIOS_PAGO', 'activo3', this.checked ? '1' : '0')">
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Accordion for Advanced Settings -->
+                        <details class="advanced-settings">
+                            <summary>Campos Adicionales / Avanzados (Cierre y Estilos)</summary>
+                            <div class="form-grid" style="margin-top: 1rem;">
+                                <div class="form-group">
+                                    <label for="univ-cierre-max">Máx Caracteres de Impresión</label>
+                                    <input type="number" id="univ-cierre-max" oninput="updateField('vposuniversal', 'cierrevoucher', 'maxCaracterImpresion', this.value)">
+                                </div>
+                                <div class="form-group">
+                                    <label for="univ-cierre-align">Alineación del Texto</label>
+                                    <select id="univ-cierre-align" onchange="updateField('vposuniversal', 'cierrevoucher', 'alineacionTexto', this.value)">
+                                        <option value="L">L - Izquierda</option>
+                                        <option value="C">C - Centrado</option>
+                                        <option value="R">R - Derecha</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="univ-cierre-det">Cierre Voucher Detalle</label>
+                                    <input type="number" id="univ-cierre-det" oninput="updateField('vposuniversal', 'cierrevoucher', 'detalle', this.value)">
+                                </div>
+                            </div>
+                        </details>
+                    </div>
+
+                    <!-- FORM 3: vposo2d.ini -->
+                    <div class="form-section" id="form-vposo2d">
+                        <div class="section-header">
+                            <h3>Canal Pago Móvil (C2P / P2C)</h3>
+                            <p>Estructura de comunicación y cuentas de enlace bancario rápido</p>
+                        </div>
+                        <div class="form-grid">
+                            <div class="form-group form-group-full">
+                                <label for="o2d-p2c-cuenta">Enlace Banco Destino (acqcodeTlfp2c1)</label>
+                                <input type="text" id="o2d-p2c-cuenta" oninput="updateField('vposo2d', 'acqcodeTlfp2c', 'acqcodeTlfp2c1', this.value)" style="font-family: 'JetBrains Mono', monospace;">
+                                <div class="form-group-desc">Formato: CODIGO_BANCO#TELEFONO,NOMBRE_BANCO - TELEFONO (Ej: 0115#04140000000,Exterior - 0414-0000000)</div>
+                            </div>
+                            <div class="form-group">
+                                <label for="o2d-p2c-cant">Cantidad de Enlaces</label>
+                                <input type="number" id="o2d-p2c-cant" oninput="updateField('vposo2d', 'acqcodeTlfp2c', 'cant', this.value)">
+                            </div>
+                            <div class="form-group">
+                                <label for="o2d-p2c-visible">Enlaces Visibles en Pantalla</label>
+                                <input type="number" id="o2d-p2c-visible" oninput="updateField('vposo2d', 'acqcodeTlfp2c', 'cantVisible', this.value)">
+                            </div>
+                        </div>
+
+                        <!-- Accordion for Advanced Settings -->
+                        <details class="advanced-settings">
+                            <summary>Campos Adicionales / Avanzados (OTP y Monedas)</summary>
+                            <div class="form-grid" style="margin-top: 1rem;">
+                                <div class="form-group">
+                                    <label for="o2d-otp-required">OTP Requerido</label>
+                                    <select id="o2d-otp-required" onchange="updateField('vposo2d', 'parmOTPP2C', 'required', this.value)">
+                                        <option value="0">0 - No Requerido</option>
+                                        <option value="1">1 - Obligatorio</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="o2d-otp-active">OTP Activo</label>
+                                    <select id="o2d-otp-active" onchange="updateField('vposo2d', 'parmOTPP2C', 'active', this.value)">
+                                        <option value="0">0 - Desactivado</option>
+                                        <option value="1">1 - Activo</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="o2d-moneda-pago">Habilitar Modificación Moneda P2C</label>
+                                    <select id="o2d-moneda-pago" onchange="updateField('vposo2d', 'monedaPagoP2C', 'active', this.value)">
+                                        <option value="0">0 - Bloqueado</option>
+                                        <option value="1">1 - Habilitado</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </details>
+                    </div>
+                    
+                </div>
+
+                <!-- Live Code Preview Panel -->
+                <div class="preview-pane">
+                    <div class="preview-header">
+                        <span class="preview-title" id="preview-filename">vposconf.ini</span>
+                        
+                        <!-- Toggle switcher for preview modes -->
+                        <div class="view-toggle">
+                            <button class="toggle-btn active" id="toggle-total" onclick="setPreviewMode('total')">Total</button>
+                            <button class="toggle-btn" id="toggle-compact" onclick="setPreviewMode('compact')">Compacta</button>
+                        </div>
+                    </div>
+                    <div class="preview-content">
+                        <pre><code id="code-block"></code></pre>
+                    </div>
+                    <div class="preview-actions">
+                        <button class="btn" onclick="copyToClipboard()">
+                            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg>
+                            Copiar
+                        </button>
+                        <button class="btn btn-primary" onclick="downloadActiveFile()">
+                            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                            Descargar
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Notification Toast -->
+    <div class="toast" id="toast-notif">Operación realizada con éxito</div>
+
+    <!-- JavaScript logic -->
+    <script>
+        // Templates injected from python script
+        const rawTemplates = {
+            vposconf: `*--------------------------------------------------------------*
+* Fecha de vigencia de la informacion
+*--------------------------------------------------------------*
+[vigenciaVersion]
+fecha=13/05/2026 11:10
+
+--------------------------------------------------------------*
+* Version a la cual corresponde el software
+*--------------------------------------------------------------*
+[versionVPos]
+version=3.15.9
+
+*--------------------------------------------------------------*
+* Comunicacion TCP/IP POS - Merchant Server
+*--------------------------------------------------------------*
+[server]
+host=ssl.megasoftve.com
+port=4763
+
+*--------------------------------------------------------------*
+* Comunicacion TPDU POS - Merchant Server
+*--------------------------------------------------------------*
+[TPDU]
+tmessage=60
+origen=0000
+destino=0182
+
+*--------------------------------------------------------------*
+* Manejo de consecutivo de numero de secuencia
+*--------------------------------------------------------------*
+[SeqNum]
+seqnum=1
+limite=999999
+
+*--------------------------------------------------------------*
+* Manejo de informacion de caja
+*--------------------------------------------------------------*
+[vtid]
+vtid=VTID_PRUEBA_01
+id=01
+
+*--------------------------------------------------------------*
+* Definicion de rutas para la ubicacion de archivos intermedios
+*--------------------------------------------------------------*
+[path]
+path=C:\\voucher\\
+pathtimer=C:\\timer\\
+pathverifone=.\\conf\\verifone\\
+pathingenico=.\\conf\\ingenico\\
+
+*--------------------------------------------------------------*
+* Nombre base de los vouchers.
+*--------------------------------------------------------------*
+[nombrevoucher]
+voucher=
+
+*--------------------------------------------------------------*
+* driverComunicacionSerial:
+*--------------------------------------------------------------*
+[driverComunicacionSerial]
+driverComunicacionSerial=1
+
+*--------------------------------------------------------------*
+* Configuracion del pinpad
+*---------------------------------------------------------------*
+[pinpad]
+tipo=1
+puerto=COM9
+velocidad=1200
+paridad=E
+bitsDatos=7
+imprime=0
+maxLineasVoucher=20
+maxLineasImpresion=50
+solicitarTeclaCopia=0
+textoTeclaCopia=PRESIONE ENTER
+timeoutTextoCopia=1
+retardoLectura=1
+retardoEspera=1
+pinpadName= ** MEGA SOFT **
+tipoComunicacion=2
+tiempoSimulador=0
+reintentarErrorPin=no
+reintentosPin=2
+
+*---------------------------------------------------------------*
+*  Configuracion espcifia para dispositivos Verifone
+* modelo: 
+*	Determina el modelo del dispositivo. Sus posibles
+*	valores son: EVO, ENGAGE
+* puerto : 
+*	Establece el tipo de puerto del dispositivo
+*	Verifone. Sus posibles valores son: USB, RS232
+* comandosNuevos : 
+*	Especifica si se usarn los nuevos comandos de
+*	Verifone.
+*	0: desactivado (Se usan comandos antiguos)
+*	1: activado (Se usan comandos nuevos)
+* tipoPinblock: 
+*	Determina el tipo de encriptacin. Sus posibles
+*	valores son: TRIPLEDES, DUKPT
+* dataSensibleEncriptada: 
+*	Establece si ser encriptada o no la data
+*	sensible. 0: No encripta. 1: S encripta.
+*---------------------------------------------------------------*
+[pinpad-verifone]
+modelo=ENGAGE
+puerto=USB
+comandosNuevos=0
+tipoPinblock=TRIPLEDES
+dataSensibleEncriptada=0
+mantenerConexion=1
+
+[pinpad-datos]
+datos=
+                   
+*---------------------------------------------------------------*
+* lectorcheque: Activa el uso del lector de cheque.             *
+* configuracion LECTOR DE CHEQUE                                *                                           *
+*---------------------------------------------------------------*
+[lectorcheque]
+lectorcheque=0
+
+[checkread]
+puerto=COM1
+velocidad=9600
+paridad=E
+bitsDatos=7
+tipo=1
+
+*---------------------------------------------------------------*
+* Version del sistema operativo Presto 210p para el control de
+*---------------------------------------------------------------*
+[versionpresto]
+versionpresto=3
+
+*---------------------------------------------------------------*
+* Definicion del formato impresion de campos monto
+*
+* activo
+*	Activa o desactiva el formato especificado para
+*	los montos en la respuesta de VPos
+*	0: Desactivado. 1: Activado
+* formatoMontoTrx: 
+*	Especifica el formato que tendrn los montos de 
+*	transacciones en la respuesta de VPos.
+* formatoMontoDivisa: 
+*	Especifica el formato que tendrn los montos en
+*	divisa en la respuesta de VPos.
+*	
+*	#: Dgito del monto
+*	0: Dgito del monto que ser mostrado como 0 en caso de 
+*	   que no est presente
+*	[SD]: Separador decimal.
+*	[SM]: Separador de miles 
+*
+* miles:
+*	Caracter usado para representar el separador de miles. 
+*	No debe ser igual a decimales. Posible valores: , .
+* decimales:
+*	Caracter usado para representar el separador decimal. 
+*	No debe ser igual a miles. Posible valores: , .
+*---------------------------------------------------------------*
+[moneda]
+activo=0
+formatoMontoTrx=###[SM]###[SM]###[SM]##0[SD]00
+formatoMontoDivisa=###[SM]###[SM]###[SM]##0[SD]00
+miles=.
+decimales=,
+nombre=
+
+*---------------------------------------------------------------*
+* Informacion contenida en vouchers y reporte de cierre
+*---------------------------------------------------------------*
+[voucher]
+tienda=Configurar Caja
+localidad=
+rif=
+copias=1
+encabezado=
+LineaEncabezado4=         RIF: J-********-* 
+LineaEncabezado7=       Telf: 0212-000-0000
+LineaEncabezado8=     ***   NO FISCAL    ***
+LineaEncabezado9=       REPORTE NRO:
+
+*---------------------------------------------------------------*
+* Parametros de generacion de reporte de cierre de extracredito:
+*---------------------------------------------------------------*
+[reporte-extracredito]
+134=J-07013380-5
+
+*---------------------------------------------------------------*
+* Activacion / Desactivacion de procesos realizados previos al
+* cierre de caja:
+*---------------------------------------------------------------*
+[cierre]
+pagosOtrosMedios=0
+alerta=Una alerta ser enviada a la administracin
+persistentSettlement=0
+confirmacionSettlement=0
+mostrarBotonImprimirPrecierre=1
+
+*---------------------------------------------------------------*
+* Parametros de generacion de reporte de cierre:
+*---------------------------------------------------------------*
+[cierrevoucher]
+detalle=1
+encabezado1=1
+encabezado2=1
+archivo=1
+saltolinea=1
+transaccionigualcero=0
+consolidado=1
+totalMarca=0
+imprimetotalesbanco=1
+imprimeLealtadDebito=0
+imprimeLealtadCredito=0
+reporteDetalladoMesero=0
+resumen=0
+literalEncabezado=0
+imprimirTransacciones=0
+imprimirDetalleExtracredito=1
+maxCaracterImpresion=32
+alineacionTexto=L
+
+*---------------------------------------------------------------*
+*  Registro de cdigos de respuesta de transacciones en
+*  archivo .csv
+* activo : 
+*	0 : desactivado
+*   	1 : activado
+* maxHistorialArchivos : 
+*	Especifica la cantidad maxima de archivos que se
+*       almacenaran en la carpeta de historial de archivos .csv 
+*---------------------------------------------------------------*
+[registroTransacciones]
+activo=0
+maxHistorialArchivos=7
+
+*---------------------------------------------------------------*
+* Uso de impresora fiscal
+*---------------------------------------------------------------*
+[printerfiscal]
+printerfiscal=0
+
+*---------------------------------------------------------------*
+* Configuracion de modo multiempresa
+*---------------------------------------------------------------*
+[multiempresa]
+activada=no
+codigo=
+descripcion=
+
+*---------------------------------------------------------------*
+* Activacion de envio de transaccion de Logon
+*---------------------------------------------------------------*
+[logon]
+logon=1
+
+*---------------------------------------------------------------*
+* Activacion / Desactivacion de proceso de escritura de los
+* Tiempos de resolucin de las transacciones TimerTracker.
+*---------------------------------------------------------------*
+[timerTracker]
+onMode=1
+
+*---------------------------------------------------------------*
+* Parametro encargado de controlar la cantidad de reintentos
+* dentro del proceso de lectura de banda magnetica.
+* NOTA: Como minimo siempre debe estar el valor 1.
+*---------------------------------------------------------------*
+[reintentos]
+cantidad=3
+
+*---------------------------------------------------------------*
+* Parametro encargado de controlar las transacciones de
+* tipo EMV, este parametro activa, el flujo de comandos.
+*---------------------------------------------------------------*
+[EMV]
+active=1
+
+*---------------------------------------------------------------*
+* Parametro encargado de controlar las impresiones de
+* los diversos MESSAGE BOX de JAVA dentro de VPOS CORE
+* (Bajo nivel).
+*---------------------------------------------------------------*
+[MESSAGEBOX]
+active=1
+
+*---------------------------------------------------------------*
+* Parametro para la comunicacin SSL
+*---------------------------------------------------------------*
+[SSL]
+active=1
+
+*-----------------------------------------------------------------*
+* Parametro para indicar que hay que efectuar un Logon
+*-----------------------------------------------------------------*
+[marcaEfectuarLogon]
+active=0
+
+*-----------------------------------------------------------------*
+* Parametro para indicar que hay que efectuar la carga de llaves
+* publicas EMV.
+*-----------------------------------------------------------------*
+[marcaCargaLLaves]
+active=0
+
+*-----------------------------------------------------------------*
+* Parametro para indicar los parametros que se usan en los
+* procesos de almacenar los voucher en el disco
+*-----------------------------------------------------------------*
+[filesystem]
+reintentosDeEscrituraADisco=2
+tiempoEsperaEntreEscriturasADisco=200
+
+*-----------------------------------------------------------------*
+* Parametro encargado de realizar el proceso de enmascarar los
+* numeros de tarjetas.
+* Por defecto siempre estara encendido.
+* Valor 0 ==> Muestra el PAN completo de la Tarjeta.
+*       1 ==> Muestra el PAN Parcialmente Valor por Defecto.
+*-----------------------------------------------------------------*
+[hideCardNumber]
+active=1
+
+*-----------------------------------------------------------------*
+* Parametro para indicar la ruta de dll's o .so especiales para
+* la correcta ejecucin de algunos servicios, en estos parametros
+* debemos contemplar las rutas relativas o completas.
+*-----------------------------------------------------------------*
+[libraries]
+root=.\\lib\\windows\\
+`,
+            vposuniversal: `
+--------------------------------------------------------------*
+--------------------------------------------------------------*
+* Fecha de vigencia de la informacion
+*--------------------------------------------------------------*
+[vigenciaVersion]
+fecha=06/02/2026 15:01
+
+*--------------------------------------------------------------*
+* Activacion de aplicacion modo stand-alone
+*--------------------------------------------------------------*
+[MegaVpos]
+Megavpos=0
+
+*--------------------------------------------------------------*
+*  Parametros generales
+*--------------------------------------------------------------*
+[general]
+titulo=VPos Universal 3.15.9
+maxcol=4
+factor=3
+tecladoVirtual=0
+fontTecladoVirtual=16
+bordeTeclado=1
+modoAmpliado=0
+bloqueoCampoCedula=0
+bloqueoCedulaCambio=0
+minSizeCedula=4
+capturaDatosCtlss=0
+
+*--------------------------------------------------------------*
+*  Componente para reinicio o cierre VPOS
+* estado : 
+*	0 : desactivado
+*   	1 : reinicio activado
+*	2 : cierre activado
+* codigos : 
+*	Permite especificar los codigos de respuesta de VPos a
+*       traves de los cuales se realizará el cierre o reinicio 
+*--------------------------------------------------------------*
+[reinicioVpos]
+estado=0
+codigos=
+
+*--------------------------------------------------------------*
+*  Personalizacion de Formularios de Datos externos
+*--------------------------------------------------------------*
+[personalizacion]
+propietario=
+directorioPersonalizado=
+
+*--------------------------------------------------------------*
+*  - Posiciones de los formularios de la aplicacion en
+*    la pantalla
+*  - Indiscador de escritorio extendido definido y ademas en
+*    en cual screen se posicionaran los formularios de la
+*--------------------------------------------------------------*
+[posicion]
+top=150
+left=400
+topTV=150
+leftTV=800
+screenExtender=0
+posAppl=0
+
+*--------------------------------------------------------------*
+* Submenu de Compra
+*--------------------------------------------------------------*
+[SUBMENU_COMPRA]
+activo=0
+nroproducto=3
+
+tipo0=Tarjeta
+activo0=0
+imagen0=./conf/Imagenes/ComprasOfc.jpg
+tecla0=0
+titulo0=Tarjeta
+
+tipo1=Cashea
+activo1=0
+imagen1=./conf/Imagenes/Cashea.jpg
+tecla1=1
+titulo1=Cashea
+
+tipo2=Lysto
+activo2=0
+imagen2=./conf/Imagenes/Lysto.png
+tecla2=2
+titulo2=Lysto
+
+*--------------------------------------------------------------*
+* Transacciones Servicio Cashea
+*--------------------------------------------------------------*
+[TRANSACCION_SERVICIO_CASHEA]
+activo=1
+nroproducto=2
+
+
+tipo0=CasheaCreacion
+activo0=1
+imagen0=./conf/Imagenes/Cashea_creacion.jpg
+tecla0=1
+titulo0=CasheaCreacion
+
+
+tipo1=CasheaConfirmacion
+activo1=1
+imagen1=./conf/Imagenes/Cashea_confirmacion.jpg
+tecla1=2
+titulo1=CasheaConfirmacion
+
+*--------------------------------------------------------------*
+* Transacciones Servicio Lysto
+*--------------------------------------------------------------*
+[TRANSACCION_SERVICIO_LYSTO]
+activo=1
+nroproducto=2
+ 
+
+tipo0=LystoCreacion
+activo0=1
+imagen0=./conf/Imagenes/creacion.png
+tecla0=1
+titulo0=LystoCreacion
+
+
+tipo1=LystoConfirmacion
+activo1=1
+imagen1=./conf/Imagenes/confirmacion.png
+tecla1=2
+titulo1=LystoConfirmacion
+
+*--------------------------------------------------------------*
+* Transacciones permitidas en vpos
+*--------------------------------------------------------------*
+[transaccionespermitidas]
+nroproducto=22
+
+tipo0=Tarjeta
+activo0=0
+imagen0=./conf/Imagenes/ComprasOfc.jpg
+tecla0=0
+titulo0=Tarjeta
+
+tipo1=Cambio
+activo1=0
+imagen1=./conf/Imagenes/Cambio.jpg
+tecla1=V
+titulo1=Cambio
+
+tipo2=TecladoAbierto
+activo2=1
+imagen2=./conf/Imagenes/TecladoAbiertoOfc.jpg
+tecla2=1
+titulo2=Teclado Abierto
+
+tipo3=Cheque
+activo3=0
+imagen3=./conf/Imagenes/ChequeOfc.jpg
+tecla3=2
+titulo3=Cheque
+
+tipo4=ServiciosExternos
+activo4=0
+imagen4=./conf/Imagenes/ServiciosExternos.jpg
+tecla4=3
+titulo4=ServiciosExternos
+
+tipo5=PrepagoStandAlone
+activo5=0
+imagen5=./conf/Imagenes/Prepago.jpg
+tecla5=Z
+titulo5=Prepago Card's
+
+tipo6=PreautorizacionCompletitud
+activo6=0
+imagen6=./conf/Imagenes/PreAutorCompleOfc.jpg
+tecla6=4
+titulo6=Preautorizacion / Completitud
+
+tipo7=Anulacion
+activo7=1
+imagen7=./conf/Imagenes/AnulacionOfc.jpg
+tecla7=5
+titulo7=Anulacion
+
+tipo8=Cierre
+activo8=1
+imagen8=./conf/Imagenes/CierreCajaOfc.jpg
+tecla8=6
+titulo8=Cierre
+
+tipo9=PreCierre
+activo9=1
+imagen9=./conf/Imagenes/PreCierreOfc.jpg
+tecla9=7
+titulo9=Pre-Cierre
+
+tipo10=UltimaTransaccion
+activo10=1
+imagen10=./conf/Imagenes/UltVoucherOfc.jpg
+tecla10=8
+clase10=ve.com.megasoft.universal.opcion.UltimaTransaccion
+titulo10=Ultima Transaccion
+
+tipo11=UltimaTransaccionProcesada
+activo11=1
+imagen11=./conf/Imagenes/UltVoucherOfcr.jpg
+tecla11=U
+titulo11=Ultima Transaccion Procesada
+clase11=ve.com.megasoft.universal.opcion.UltimaTransaccionProcesada
+
+tipo12=Miscelaneos
+activo12=1
+imagen12=./conf/Imagenes/MiscelaneosOfc.jpg
+tecla12=9
+titulo12=Miscelaneos
+
+tipo13=ServiciosOLBCompraFront
+activo13=0
+imagen13=./conf/Imagenes/CompraServicio.jpg
+tecla13=R
+titulo13=Compra y Pago de Servicios
+
+tipo14=ServiciosOLBPagoFront
+activo14=0
+imagen14=./conf/Imagenes/Servicio.jpg
+tecla14=Q
+titulo14=Pago de Servicios
+
+tipo15=Cashback
+activo15=0
+imagen15=./conf/Imagenes/Cashback.jpg
+tecla15=A
+titulo15=Cashback
+
+tipo16=Devolucion
+activo16=0
+imagen16=./conf/Imagenes/Devolucion.jpg
+tecla16=D
+titulo16=Devolucion
+
+tipo17=ConsumoAjuste
+activo17=0
+imagen17=./conf/Imagenes/ConsumoAjuste1.jpg
+tecla17=P
+titulo17=Consumo / Ajuste
+
+tipo18=OtrosMedios
+activo18=1
+imagen18=./conf/Imagenes/OtrosMedios.jpg
+tecla18=M
+titulo18=Pago Otros Medios
+
+tipo19=OperacionManual
+activo19=0
+imagen19=./conf/Imagenes/operacionesManuales.jpg
+tecla19=O
+titulo19=Operaciones Manuales
+
+tipo20=ConsultaSwipe
+activo20=0
+imagen20=./conf/Imagenes/metodo_consulta.jpg
+tecla20=C
+titulo20=Consultas Swipe
+
+tipo21=CardsAdminitrativa
+activo21=0
+imagen21=./conf/Imagenes/CardsAdministrativo.jpg
+tecla21=Y
+titulo21=Cards Administrativa
+
+*--------------------------------------------------------------*
+*  Miscelaneos
+*--------------------------------------------------------------*
+[MISCELANEOS]
+activo=1
+nroproducto=9
+*-----------
+tipo0=UltimoCierre
+activo0=1
+imagen0=./conf/Imagenes/ReimpresionCierre.jpg
+tecla0=0
+*-----------
+tipo1=SeleccionarPrinter
+activo1=1
+imagen1=./conf/Imagenes/Selimpresora.jpg
+tecla1=1
+*-----------
+tipo2=Configurar
+activo2=1
+imagen2=./conf/Imagenes/Configurar.jpg
+tecla2=2
+*-----------
+tipo3=LoginCards
+activo3=0
+imagen3=./conf/Imagenes/LoginCard.jpg
+tecla3=3
+*-----------
+tipo4=ReportesMesero
+activo4=0
+imagen4=./conf/Imagenes/ReportesMesero.jpg
+tecla4=4
+*-----------
+tipo5=CargaLlavesPublicasEMV
+activo5=1
+imagen5=./conf/Imagenes/CargaLlavesPublicasEMV.jpg
+tecla5=5
+*-----------
+tipo6=TestMSManualFront
+activo6=1
+imagen6=./conf/Imagenes/TestComunicacion.jpg
+tecla6=6
+*-----------
+tipo7=SicronizarArchivosFront
+activo7=1
+imagen7=./conf/Imagenes/SicronizarArchivos.jpg
+tecla7=7
+*-----------
+tipo8=LogonPinpad
+activo8=1
+imagen8=./conf/Imagenes/LogonPinpad.jpg
+tecla8=8
+
+*--------------------------------------------------------------*
+* Compra con medio de pago ademas de tarjetas
+*--------------------------------------------------------------*
+[COMPRA_MEDIOS_PAGO]
+activo=1
+nroproducto=17
+*-----------
+tipo0=MedioPagoTarjeta
+activo0=0
+imagen0=./conf/Imagenes/MedioPagoTarjeta.jpg
+tecla0=0
+titulo0=Medio Pago Tarjeta
+*-----------
+tipo1=MedioPagoBioPago
+activo1=0
+imagen1=./conf/Imagenes/MedioPagoBiopago.jpg
+tecla1=1
+titulo1=Medio Pago BioPago
+*-----------
+tipo2=MedioPagoC2P
+activo2=0
+imagen2=./conf/Imagenes/PagoMovil.jpg
+tecla2=2
+titulo2=Medio Pago C2P
+*-----------
+tipo3=MedioPagoP2C
+activo3=1
+imagen3=./conf/Imagenes/PagoMovilP2C.jpg
+tecla3=3
+titulo3=Medio Pago P2C
+* -----------
+tipo4=MedioPagoCrypto
+activo4=0
+imagen4=./conf/Imagenes/CriptoMonedas.jpg
+tecla4=4
+titulo4=Medio Pago Criptomonedas
+* -----------
+tipo5=MedioPagoPresidents
+activo5=0
+imagen5=./conf/Imagenes/BPPresidets.jpg
+tecla5=5
+titulo5=Medio Pago BanPlusPresidents
+* -----------
+tipo6=MedioPagoLibrePago
+activo6=0
+imagen6=./conf/Imagenes/LibrePagoCompra.jpg
+tecla6=6
+titulo6=Medio Pago LibrePago
+* -----------
+tipo7=MedioPagoZelle
+activo7=0
+imagen7=./conf/Imagenes/Zelle.jpg
+tecla7=7
+titulo7=Medio Pago Zelle
+* -----------
+tipo8=MedioPagoPetro
+activo8=0
+imagen8=./conf/Imagenes/PetroApp.jpg
+tecla8=8
+titulo8=Medio Pago Petro
+* -----------
+tipo9=MedioPagoTransferencia
+activo9=0
+imagen9=./conf/Imagenes/Transferencia.jpg
+tecla9=9
+titulo9=Medio Pago Transferencia
+* -----------
+tipo10=MedioPagoCards
+activo10=0
+imagen10=./conf/Imagenes/CompraCards.jpg
+tecla10=C
+titulo10=Medio Pago Cards
+
+* -----------
+tipo11=MedioPagoDeposito
+activo11=0
+imagen11=./conf/Imagenes/Deposito.jpg
+tecla11=D
+titulo11=Medio Pago Deposito
+* -----------
+tipo12=MedioPagoEfectivo
+activo12=0
+imagen12=./conf/Imagenes/Efectivo.jpg
+tecla12=E
+titulo12=Medio Pago Efectivo
+* -----------
+tipo13=MedioPagoDebitoInmediato
+activo13=0
+imagen13=./conf/Imagenes/DebitoInmediato.jpg
+tecla13=F
+titulo13=Medio Pago Debito Inmediato
+* -----------
+tipo14=MedioPagoXcapit
+activo14=0
+imagen14=./conf/Imagenes/Xcapit.jpg
+tecla14=X
+titulo14=Medio Pago Xcapit
+* -----------
+tipo15=MedioPagoCrixto
+activo15=0
+imagen15=./conf/Imagenes/Crixto.jpg
+tecla15=C
+titulo15=Medio Pago Crixto
+* -----------
+tipo16=MedioAccessPay
+activo16=0
+imagen16=./conf/Imagenes/AccessPay.jpg
+tecla16=A
+titulo16=Medio Pago Access Pay
+*--------------------------------------------------------------*
+* Cambio con medio de pago 
+*--------------------------------------------------------------*
+[C@MBIO_MEDIO_PAGO]
+activo=1
+nroproducto=5
+*-----------
+tipo0=MedioC@mbioPagoMovil
+activo0=1
+imagen0=./conf/Imagenes/PagoMovilVuelto.jpg
+tecla0=0
+titulo0=Medio Vuelto PagoMovil
+*-----------
+tipo1=MedioC@mbioCards
+activo1=1
+imagen1=./conf/Imagenes/CardsVuelto.jpg
+tecla1=1
+titulo1=Medio Vuelto Cards
+*-----------
+tipo2=MedioC@mbioOtros
+activo2=1
+imagen2=./conf/Imagenes/OtrosVueltos.jpg
+tecla2=2
+titulo2=Medio Vuelto Otros
+*-----------
+tipo3=MedioC@mbioPetro
+activo3=1
+imagen3=./conf/Imagenes/Petro_Cambio.jpg
+tecla3=3
+titulo3=Medio Vuelto Petro
+*-----------
+tipo4=MedioC@mbioCreditoInmediato
+activo4=1
+imagen4=./conf/Imagenes/CambioCreditoInmediato.jpg
+tecla4=4
+titulo4=Medio Credito Inmediato
+*--------------------------------
+*--------------------------------------------------------------*
+*  Submenu de anulacion
+*--------------------------------------------------------------*
+[ANULACION]
+activo=1
+nroproducto=1
+*-----------
+tipo0=AnulacionCompra
+imagen0=./conf/Imagenes/AnulacionCompras0.jpg
+tecla0=0
+*-----------
+tipo1=AnulacionPreautorizacionEspecial
+imagen1=./conf/Imagenes/AnulacionPreautorizaBNC.jpg
+tecla1=1
+*-----------
+tipo2=AnulacionPreautorizacion
+imagen2=./conf/Imagenes/Anul_Preaut_Ta_Bnc.jpg
+tecla2=2
+
+*--------------------------------------------------------------*
+*  Transacciones de preautorizacion y completitud
+*--------------------------------------------------------------*
+[PREAUTORIZACION-COMPLETITUD]
+activo=0
+nroproducto=4
+*-----------
+tipo0=PreAutorizacion
+imagen0=./conf/Imagenes/PreAutoMan.jpg
+tecla0=0
+*-----------
+tipo1=PreAutorizacionSwipe
+imagen1=./conf/Imagenes/PreAutoSwipeOfc.jpg
+tecla1=1
+*-----------
+tipo2=Completitud
+imagen2=./conf/Imagenes/CompletitudMan.jpg
+tecla2=2
+*-----------
+tipo3=CompletitudSwipe
+imagen3=./conf/Imagenes/CompletSwipeOfc.jpg
+tecla3=3
+
+*--------------------------------------------------------------*
+*  Transacciones de preautorizacion y completitud
+*--------------------------------------------------------------*
+[PREAUTORIZACION]
+activo=0
+nroproducto=2
+*-----------
+tipo0=PreAutorizacion
+imagen0=./conf/Imagenes/PreAutoMan.jpg
+tecla0=0
+*-----------
+tipo1=PreAutorizacionSwipe
+imagen1=./conf/Imagenes/PreAutoSwipeOfc.jpg
+tecla1=1
+
+*--------------------------------------------------------------*
+[PREAUTORIZACION-GM]
+activo=0
+nroproducto=1
+*-----------
+tipo0=PreAutorizacion
+imagen0=./conf/Imagenes/PreAutoMan.jpg
+tecla0=0
+
+*--------------------------------------------------------------*
+*  Transacciones de preautorizacion y completitud
+*--------------------------------------------------------------*
+[COMPLETITUD]
+activo=0
+nroproducto=2
+*-----------
+tipo0=Completitud
+imagen0=./conf/Imagenes/CompletitudMan.jpg
+tecla0=2
+*-----------
+tipo1=CompletitudSwipe
+imagen1=./conf/Imagenes/CompletSwipeOfc.jpg
+tecla1=3
+
+*--------------------------------------------------------------*
+*  Transacciones CASHBACK
+*--------------------------------------------------------------*
+[CASHBACK]
+activo=0
+nroproducto=2
+*-----------
+tipo0=Avance
+imagen0=./conf/Imagenes/Avance.jpg
+tecla0=0
+*-----------
+tipo1=CompraMasVuelto
+imagen1=./conf/Imagenes/CompraVuelto.jpg
+tecla1=2
+
+*--------------------------------------------------------------*
+*  Transacciones de compra mas pago de servicios
+*--------------------------------------------------------------*
+[SERVICIOSOLB_COMPRA]
+activo=0
+nroproducto=6
+*-----------
+tipo0=ServiciosOLBCompraTarjeta
+activo0=0
+imagen0=.\\conf\\Imagenes\\RecargaTarjeta.jpg
+tecla0=0
+titulo0=Medio Pago Tarjeta
+*-----------
+tipo1=ServiciosOLBCompraEfectivo
+activo1=0
+imagen1=.\\conf\\Imagenes\\RecargaEfectivo.jpg
+tecla1=1
+titulo1=Medio Pago Efectivo
+*-----------
+tipo2=BioPagoCompraOLBP
+activo2=0
+imagen2=./conf/Imagenes/ServiciosOLBBiopago.jpg
+tecla2=2
+titulo2=Medio Pago Biopago
+*-----------
+tipo3=C2PCompraOLBP
+activo3=0
+imagen3=./conf/Imagenes/PagoMovilC2POlbPos.jpg
+tecla3=3
+titulo3=Medio C2PC
+*-----------
+tipo4=P2CCompraOLBP
+activo4=0
+imagen4=./conf/Imagenes/PagoMovilP2COlbPos.jpg
+tecla4=4
+titulo4=Medio P2C
+*-----------
+tipo5=MedioPagoCripto
+activo5=0
+imagen5=./conf/Imagenes/CriptoMonedasOlbP.jpg
+tecla5=5
+titulo5=Medio Pago Criptomonedas
+* -----------
+tipo6=MedioPagoPresidents
+activo6=1
+imagen6=./conf/Imagenes/BPPresidets.jpg
+tecla6=6
+titulo6=Medio Pago BanPlusPresidents
+
+
+*--------------------------------------------------------------*
+*  Administracion de Cards
+*--------------------------------------------------------------*
+[ADMINISTRACION-CARDS]
+activo=1
+nroproducto=5
+*-----------
+tipo0=Activacion
+activo0=1
+imagen0=.\\conf\\Imagenes\\ActivacionCards.jpg
+tecla0=0
+*-----------
+tipo1=Pin
+activo1=1
+imagen1=.\\conf\\Imagenes\\CardsPin1.jpg
+tecla1=1
+*-----------
+tipo2=ConsultaLealtad
+activo2=1
+imagen2=.\\conf\\Imagenes\\CardsConsultaLealtad.jpg
+tecla2=2
+*-----------
+tipo3=DevolucionAcreditacion
+activo3=1
+imagen3=.\\conf\\Imagenes\\CardsDevolucion.jpg
+tecla3=3
+*-----------
+tipo4=ConsultaCards
+activo4=1
+imagen4=.\\conf\\Imagenes\\CardsConsulta4.jpg
+tecla4=4
+*--------------------------------------------------------------*
+*  Transacciones de pago de servicios
+*--------------------------------------------------------------*
+[SERVICIOSOLB_PAGO]
+activo=0
+nroproducto=6
+*-----------
+tipo0=ServiciosOLBPagoTarjeta
+activo0=0
+imagen0=.\\conf\\Imagenes\\RecargaTarjeta.jpg
+tecla0=0
+titulo0=Medio Pago Tarjeta
+*-----------
+tipo1=ServiciosOLBPagoEfectivo
+activo1=0
+imagen1=.\\conf\\Imagenes\\RecargaEfectivo.jpg
+tecla1=1
+titulo1=Medio Pago Efectivo
+*-----------
+tipo2=BioPagoPagoOLBP
+activo2=0
+imagen2=./conf/Imagenes/ServiciosOLBBiopago.jpg
+tecla2=2
+titulo2=Medio Pago Biopago
+*-----------
+tipo3=C2PPagoOLBP
+activo3=0
+imagen3=./conf/Imagenes/PagoMovilC2POlbPos.jpg
+tecla3=3
+titulo3=Medio C2P
+*-----------
+tipo4=P2CPagoOLBP
+activo4=0
+imagen4=./conf/Imagenes/PagoMovilP2COlbPos.jpg
+tecla4=4
+titulo4=Medio P2C
+*-----------
+tipo5=MedioPagoCripto
+activo5=0
+imagen5=./conf/Imagenes/CriptoMonedasOlbP.jpg
+tecla5=5
+titulo5=Medio Pago Criptomonedas
+* -----------
+tipo6=MedioPagoPresidents
+activo6=1
+imagen6=./conf/Imagenes/BPPresidets.jpg
+tecla6=6
+titulo6=Medio Pago BanPlusPresidents
+
+*--------------------------------------------------------------*
+*  Transacciones de C@mbio para devolución de servicios
+*--------------------------------------------------------------*
+[SERVICIOSOLB_CAMBIO]
+activo=1
+nroproducto=5
+*-----------
+tipo0=ServiciosC@mbioPagoMovil
+activo0=1
+imagen0=.\\conf\\Imagenes\\PagoMovilVuelto.jpg
+tecla0=0
+titulo0=Medio C@mbio PagoMovil
+*-----------
+tipo1=ServiciosC@mbioCards
+activo1=1
+imagen1=.\\conf\\Imagenes\\CardsVuelto.jpg
+tecla1=1
+titulo1=Medio C@mbio Cards
+*-----------
+tipo2=ServiciosC@mbioOtros
+activo2=1
+imagen2=./conf/Imagenes/OtrosVueltos.jpg
+tecla2=2
+titulo2=Medio C@mbio Otros
+*-----------
+tipo3=ServiciosC@mbioPetro
+activo3=1
+imagen3=./conf/Imagenes/Petro_Cambio.jpg
+tecla3=3
+titulo3=Medio C@mbio Petro
+*-----------
+tipo4=ServiciosC@mbioCreditoInmediato
+activo4=1
+imagen4=./conf/Imagenes/CambioCreditoInmediato.jpg
+tecla4=4
+titulo4=Medio C@mbio Credito Inmediato
+*--------------------------------------------------------------*
+*  Transacciones de devolucion (No Implementadas)
+*--------------------------------------------------------------*
+[DEVOLUCION]
+activo=0
+nroproducto=2
+*-----------
+tipo0=DevolucionSwipe
+imagen0=./conf/Imagenes/DevolucionSwipe.jpg
+tecla0=0
+*-----------
+tipo1=Devolucion
+imagen1=./conf/Imagenes/DevolucionManual.jpg
+tecla1=1
+
+*--------------------------------------------------------------*
+*  Transacciones de pago otros medios
+*--------------------------------------------------------------*
+[OTROS-MEDIOS]
+activo=0
+nroproducto=2
+*-----------
+tipo0=OtrosMediosGeneral
+imagen0=./conf/Imagenes/OtrosMediosGeneral.jpg
+tecla0=0
+*-----------
+tipo1=OtrosMediosDetalle
+imagen1=./conf/Imagenes/OtrosMediosDetalle.jpg
+tecla1=1
+
+*--------------------------------------------------------------*
+*  Productos de Transacciones OPERACION-MANUAL
+*--------------------------------------------------------------*
+[OPERACION-MANUAL]
+activo=0
+nroproducto=3
+*-----------
+tipo0=TecladoAbiertoCreditoFinanciamiento
+imagen0=./conf/Imagenes/tecladoAbiertoFinanciado.jpg
+tecla0=0
+*-----------
+tipo1=PagoTarjetaManual
+imagen1=./conf/Imagenes/PagoTarjeta.jpg
+tecla1=1
+*-----------
+tipo2=Devolucion
+imagen2=./conf/Imagenes/DevolucionManual2.jpg
+tecla2=2
+
+*--------------------------------------------------------------*
+*  Transacciones de consumo y ajuste
+*--------------------------------------------------------------*
+[CONSUMO-AJUSTE]
+activo=0
+nroproducto=3
+*-----------
+tipo0=Consumo
+imagen0=./conf/Imagenes/ConsumoManual.jpg
+tecla0=0
+*-----------
+tipo1=ConsumoSwipe
+imagen1=./conf/Imagenes/ConsumoSwipe.jpg
+tecla1=1
+*-----------
+tipo2=Ajuste
+imagen2=./conf/Imagenes/AjusteManual.jpg
+tecla2=2
+
+*--------------------------------------------------------------*
+*  Reportes Mesero
+*--------------------------------------------------------------*
+[REPORTES-MESERO]
+activo=0
+nroproducto=2
+*-----------
+tipo0=ReporteMeseroResumen
+imagen0=./conf/Imagenes/ReporteMeseroResumen.jpg
+tecla0=0
+*-----------
+tipo1=ReporteMeseroDetalle
+imagen1=./conf/Imagenes/ReporteMeseroDetalle.jpg
+tecla1=1
+
+*--------------------------------------------------------------*
+*  Transacciones de compra con financimiento
+*--------------------------------------------------------------*
+[COMPRA-FINANCIADA]
+activo=0
+nroproducto=2
+*-----------
+tipo0=ConsultaFinanciamientoPlatco
+imagen0=./conf/Imagenes/ConsultasOfc_01.jpg
+tecla0=0
+*-----------
+tipo1=CompraFinanciamientoPlatco
+imagen1=./conf/Imagenes/CompraOfc_01.jpg
+tecla1=1
+
+*--------------------------------------------------------------*
+*  Productos de banco VENEZUELA
+*--------------------------------------------------------------*
+[VENEZUELA]
+activo=0
+nroproducto=5
+*-----------
+tipo0=Compra
+imagen0=./conf/Imagenes/ComprasVenezuela.jpg
+tecla0=0
+*-----------
+tipo1=JuntosPuntos
+imagen1=./conf/Imagenes/JuntosPuntos.jpg
+tecla1=1
+*-----------
+tipo2=JuntosCupones
+imagen2=./conf/Imagenes/JuntosCupones.jpg
+tecla2=2
+*-----------
+tipo3=ConsultaJuntos
+imagen3=./conf/Imagenes/ConsultaJuntos.jpg
+tecla3=3
+*-----------
+tipo4=ConsultaFinanciamientoSeq
+imagen4=./conf/Imagenes/VenezuelaComprasFinanc.jpg
+tecla4=4
+
+*--------------------------------------------------------------*
+*  Productos de banco VENEZUELA-CONSULTA
+*--------------------------------------------------------------*
+[VENEZUELA-CONSULTA]
+activo=0
+nroproducto=1
+*-----------
+tipo0=ConsultaJuntos
+imagen0=./conf/Imagenes/ConsultaJuntos.jpg
+tecla0=0
+
+*--------------------------------------------------------------*
+*  Productos de banco BANESCO-CREDITO
+*--------------------------------------------------------------*
+[BANESCO-CREDITO]
+activo=0
+nroproducto=3
+*-----------
+tipo0=CompraCredito
+imagen0=./conf/Imagenes/BanescoCompras.jpg
+tecla0=0
+*-----------
+tipo1=ConsultaExtraCredito
+imagen1=./conf/Imagenes/BanescoConsultaExtracredito.jpg
+tecla1=1
+*-----------
+tipo2=AutorizacionExtracredito
+imagen2=./conf/Imagenes/BanescoAutorizacionExtracredito.jpg
+tecla2=2
+
+*--------------------------------------------------------------*
+*  Productos de banco BOD
+*--------------------------------------------------------------*
+[BOD]
+activo=0
+nroproducto=2
+*-----------
+tipo0=Compra
+imagen0=./conf/Imagenes/BodCompras.jpg
+tecla0=0
+*-----------
+tipo1=BODescuentos
+imagen1=./conf/Imagenes/BodDescuento.jpg
+tecla1=1
+
+*--------------------------------------------------------------*
+*  Productos de Banco PROVINCIAL
+*--------------------------------------------------------------*
+[PROVINCIAL]
+activo=0
+nroproducto=3
+*-----------
+tipo0=Compra
+imagen0=./conf/Imagenes/ProvincialCompras.jpg
+tecla0=0
+*-----------
+tipo1=Provimillas
+imagen1=./conf/Imagenes/ProvincialProvimillas.jpg
+tecla1=1
+*-----------
+tipo2=ConsultaFinanciamientoPlatco
+imagen2=./conf/Imagenes/ProvincialComprasFinanc.jpg
+tecla2=2
+
+*--------------------------------------------------------------*
+*  Productos de banco MERCANTIL
+*--------------------------------------------------------------*
+[MERCANTIL-CREDITO]
+activo=0
+nroproducto=2
+*-----------
+tipo0=Compra
+imagen0=./conf/Imagenes/MercantilCompras.jpg
+tecla0=0
+*-----------
+tipo1=ConsultaFinanciamientoPlatco
+imagen1=./conf/Imagenes/MercantilComprasFinanc.jpg
+tecla1=1
+
+*--------------------------------------------------------------*
+*  Productos GM
+*--------------------------------------------------------------*
+[GM]
+activo=0
+nroproducto=1
+*-----------
+tipo0=EPA
+imagen0=./conf/Imagenes/Cards.jpg
+tecla0=0
+
+*--------------------------------------------------------------*
+*  Productos de banco VENEZOLANO
+*--------------------------------------------------------------*
+[VENEZOLANO]
+activo=0
+nroproducto=2
+*-----------
+tipo0=Compra
+imagen0=./conf/Imagenes/ComprasBVC.jpg
+tecla0=0
+*-----------
+tipo1=RecargaCards
+imagen1=./conf/Imagenes/RecargaBVC.jpg
+tecla1=1
+*--------------------------------------------------------------*
+*  Productos de Transacciones SERVIVALORES
+*--------------------------------------------------------------*
+[SERVIVALORES]
+activo=0
+nroproducto=3
+*-----------
+tipo0=CompraFinanciamientoVasa
+imagen0=./conf/Imagenes/CompraCredix.jpg
+tecla0=0
+*-----------
+tipo1=PagoTarjeta
+imagen1=./conf/Imagenes/PagoTarjeta.jpg
+tecla1=1
+*-----------
+tipo2=DevolucionSwipe
+imagen2=./conf/Imagenes/DevolucionSwipeServivalores.jpg
+tecla2=2
+
+*--------------------------------------------------------------*
+*  Productos VisaNet CENTRO AMERICA
+*--------------------------------------------------------------*
+[VISANET]
+activo=0
+nroproducto=4
+*-----------
+tipo0=Compra
+imagen0=./conf/Imagenes/ComprasOfc.jpg
+tecla0=0
+*-----------
+tipo1=CompraFinanciamiento
+imagen1=./conf/Imagenes/VisanetComprasFinanc.jpg
+tecla1=1
+*-----------
+tipo2=CompraMontoCuotas
+imagen2=./conf/Imagenes/VisanetCompraMontoCuotas.jpg
+tecla2=2
+*-----------
+tipo3=CompraMontoPuntos
+imagen3=./conf/Imagenes/VisanetCompraMontoPuntos.jpg
+tecla3=3
+
+
+*--------------------------------------------------------------*
+*  Productos de Petro
+*--------------------------------------------------------------*
+[PETRO]
+activo=1
+nroproducto=2
+*-----------
+tipo0=MedioPagoPetro
+activo0=1
+imagen0=./conf/Imagenes/CompraPetro.jpg
+tecla0=0
+titulo0=Medio Pago Petro
+*-----------
+tipo1=MedioPagoPetroCupon
+activo1=1
+imagen1=./conf/Imagenes/CompraPetroCupon.jpg
+tecla1=1
+titulo1=Medio Pago Petro Cupon
+
+*--------------------------------------------------------------*
+*  Productos de Petro Vuelto
+*--------------------------------------------------------------*
+[PETRO_VUELTO]
+activo=1
+nroproducto=2
+*-----------
+tipo0=MedioC@mbioPetro
+activo0=1
+imagen0=./conf/Imagenes/Cambio_Petro.jpg
+tecla0=0
+titulo0=Medio C@mbio Petro
+*-----------
+tipo1=MedioC@mbioPetroCupon
+activo1=1
+imagen1=./conf/Imagenes/CambioPetroCupon.jpg
+tecla1=1
+titulo1=Medio C@mbio Petro Cupon
+
+*--------------------------------------------------------------*
+*  Selección de modo Cards
+*--------------------------------------------------------------*
+[CARDS-SWIPE]
+activo=1
+nroproducto=2
+*-----------
+tipo0=MedioTFisica
+imagen0=./conf/Imagenes/CardsCompraSwipe.jpg
+tecla0=0
+titulo0=Tarjeta Fisica
+*-----------
+tipo1=MedioTVirtual
+imagen1=./conf/Imagenes/CardsCompraSinSwipe.jpg
+tecla1=1
+titulo1=Tarjeta Desmaterializada
+
+*--------------------------------------------------------------*
+*  Selección de modo Cards
+*--------------------------------------------------------------*
+[CARDS-ADMIN-SWIPE]
+activo=1
+nroproducto=2
+*-----------
+tipo0=MedioTFisica
+imagen0=./conf/Imagenes/CardsAdminCSwipe.jpg
+tecla0=0
+titulo0=Tarjeta Fisica
+*-----------
+tipo1=MedioTVirtual
+imagen1=./conf/Imagenes/CardsAdminSSwipe.jpg
+tecla1=1
+titulo1=Tarjeta Desmaterializada
+
+*--------------------------------------------------------------*
+*  Selección Opciones Compra Cards
+*--------------------------------------------------------------*
+[CARDS-COMPRA]
+activo=1
+nroproducto=3
+*-----------
+tipo0=CompraCards
+activo0=1
+imagen0=.\\conf\\Imagenes\\CardsCompra.jpg
+tecla0=0
+*-----------
+tipo1=CanjePuntos
+activo1=1
+imagen1=.\\conf\\Imagenes\\CardsCanje.jpg
+tecla1=1
+*-----------
+tipo2=CanjeProducto
+activo2=0
+imagen2=.\\conf\\Imagenes\\CardsCanjePuntos.jpg
+tecla2=2
+
+*--------------------------------------------------------------*
+*  Imagenes generales de la aplicacion
+*--------------------------------------------------------------*
+[imagenes]
+deslizarTarjeta=./conf/Imagenes/DesliceTarjeta.jpg
+chipTarjeta=./conf/Imagenes/ChipTarjeta.jpg
+deslizarChipTarjeta=./conf/Imagenes/DesliceChipTarjeta.jpg
+deslizarChipTarjetaCTLS=./conf/Imagenes/DesliceChipTarjetaCTLS.jpg
+solicitarPin=./conf/Imagenes/IngresePin.jpg
+procesando=./conf/Imagenes/Procesando.jpg
+confirmando=./conf/Imagenes/Confirmando.jpg
+editar=./conf/Imagenes/Editar.gif
+guardar=./conf/Imagenes/ButtonSave.gif
+directorioActivo=./conf/Imagenes/Seleccionar.gif
+directorioInactivo=./conf/Imagenes/SeleccionarInactivo.gif
+insertar=./conf/Imagenes/Add1.gif
+deslizarCheque=./conf/Imagenes/LectorCheque.jpg
+ingresarDatos=./conf/Imagenes/IngreseDatos.jpg
+intercambioLlave=./conf/Imagenes/intercambio_llave.jpg
+logonPinpad=./conf/Imagenes/logon_pinpad.jpg
+backspace=./conf/Imagenes/backspace.gif
+
+*---------------------------------------------------------------*
+* Activacion del parametro SystemTray, esta funcionalidad
+* permite, colocar dentro del SystemTray de Windows al aplicativo
+* bajo la modalidad Stand Alone. Es importante que este parametro
+* este activo para su correcto funcionamiento.
+*
+* systemTrayIconRoot ==> Ruta del Icono con el cual se define.
+* active ==> 1 Activado
+*            0 Desactivado ==> Es el valor por defecto.
+*---------------------------------------------------------------*
+[SystemTray]
+systemTrayIconRoot=.\\conf\\Imagenes\\msc.ico
+active=0
+
+*--------------------------------------------------------------*
+*  Configuracion de impresora
+*--------------------------------------------------------------*
+[impresora]
+nombre=
+impresoraFiscal=0
+activa=0
+conexion=0
+puerto=
+impresorasExtras=EPSON,BMC,BIXOLON,Bematech MP-4000 TH FI,Interfaz Fiscal IA17
+impresorasExtrasValores=com.oms.printer.epson.EpsonPrint,com.oms.printer.bmc.BMCCamel,com.oms.printer.bixolon.Bixolon,ve.com.megasoft.universal.impresoras.BematechMP4000THFI,ve.com.megasoft.universal.impresoras.InterfazFiscalIA17
+pathArchivoFiscal=
+fontReporteSA=8
+
+*--------------------------------------------------------------*
+*  Pinpads disponibles
+*--------------------------------------------------------------*
+[pinpads]
+emulador=Verifone,Ingenico
+id=1,4
+
+*--------------------------------------------------------------*
+*  Lectores disponibles
+*--------------------------------------------------------------*
+[lectores]
+emulador=Olivetti
+id=1
+
+*--------------------------------------------------------------*
+*  Test automático: Solo en caso de ser ejecutado como servicio.
+*    frecuencia: Frecuencia de envio de mensajes de test al MS.
+*      El valor 0 deshabilita el envio de mensajes de test
+*      automaticos. Un valor mayor a 0 indica el tiempo entre
+*      envios, representado en segundos.
+*    timeout: Tiempo de espera por la respuesta del MS.
+*--------------------------------------------------------------*
+[test]
+frecuencia=0
+timeout=3
+
+*--------------------------------------------------------------*
+*  Timeout para interaccion con Componentes externos
+*--------------------------------------------------------------*
+[server]
+timeoutEntradaDatos=0
+
+*---------------------------------------------------------------*
+* Tiempo que se tarda el proceso FocusHack en hacer recuperar
+* el foco en una nueva pantalla o diálogo
+*---------------------------------------------------------------*
+[focusHack]
+delay=100
+
+*---------------------------------------------------------------*
+* Tiempo minimo de Espera, para evitar la generacion de
+* Multiples eventos concurrentes.
+*---------------------------------------------------------------*
+[gapTime]
+timeoutEntradaDatos=0
+timeValue=2000
+
+*---------------------------------------------------------------*
+* Tiempo limite de inactividad en la captura de datos.
+*---------------------------------------------------------------*
+[timerInactividad]
+limite=10
+limiteServiciosPago=60
+timeoutFormulario=0
+
+*---------------------------------------------------------------*
+* Tiempo limite de espera para ejecutar una Compra Financiada.
+* -    Solo par BDV.n
+*---------------------------------------------------------------*
+[timerEsperaCompraFinanciada]
+limite=2
+
+*---------------------------------------------------------------*
+*    Activacion del parametro optimzer, esta funcionalidad estara,
+* Siempre por defecto apagada, solo debe ser utilizada en
+* casos extremos.
+*---------------------------------------------------------------*
+[optimizer]
+active=0
+
+*---------------------------------------------------------------*
+* Activacion del parametro editField, esta funcionalidad,
+* permite editar los campos enviados por medio de los metodos
+* universales dentro de los formularios.
+*---------------------------------------------------------------*
+[editField]
+active=0
+
+*---------------------------------------------------------------*
+* Campos Especiales: la especificación de visibilidad o
+*   validación del Bundles es solapada por el valor captura en
+*   la configuración del VPos
+*---------------------------------------------------------------*
+[camposEspeciales]
+cantCampos=0
+campo1=codigoSeguridad,1,0,0
+campo2=cedulaIdentidad,1,0,0
+campo3=ultDigitosTarjeta,1,0,0
+campo4=monto,1,0,0,
+
+*--------------------------------------------------------------*
+* Indicador de procesar tarjetas internacionales
+* con procesos diferentes a los estandares
+* active : 
+*	0 : no ejecutar el proceso
+*   1 : ejecutar el proceso
+* paisLocal : valor asigando, no cambiar	
+*--------------------------------------------------------------*
+[proceso_internacional]
+active=0
+paisLocal=862
+
+*--------------------------------------------------------------*
+* Configuración de la opcion que permite ejecutar procesos
+* en la aplicacion PosOLB antes de generar del transaccion
+* active: Para indicador si las transacciones estan disponibles
+*		0 : inactiva
+*	    1 : activa
+* pathApplServiciosOLB: directorio donde estan los parametros
+*         de OLBPos
+* Procesos autorizados
+*	cant de procesos: cantidad de procesos definidos
+*   procesoX: identificacion del proceso en el VPos
+*   activoX : indica si el proceso esta activo
+*   timeOutX: tiempo de espera con la aplicacion. En minutos
+*   instrumentoX: tipos de tarjetas validas para el proceso
+*--------------------------------------------------------------*
+[posOLB-proceso]
+active=0
+pathApplServiciosOLB=./conf_olbpos/
+
+cantProcesos=4
+proceso1=SERVICIOSOLB_CONF
+activo1=1
+timeOut1=0
+proceso2=SERVICIOSOLB_CIERRE
+activo2=1
+timeOut2=0
+proceso3=SERVICIOSOLB_COMPRA
+activo3=1
+timeOut3=60
+instrumento3=TDD,TDC,TDV,EFECTIVO,BIOPAGO
+proceso4=SERVICIOSOLB_PAGO
+activo4=1
+timeOut4=60
+instrumento4=TDD,TDC,TDV,EFECTIVO,BIOPAGO
+
+*--------------------------------------------------------------*
+* Tabla de conversion de los tipos de cuenta que utiliza VPos a
+* los de OLBPos
+*--------------------------------------------------------------*
+[posOLB-tipoCuenta]
+lista=E-00,0-10,1-10,2-20,3-30,4-30
+
+*--------------------------------------------------------------*
+* Ruta de configuración de BioPago.
+* Importante que el directorio termine con la /
+*--------------------------------------------------------------*
+[biopago-proceso]
+pathConfBiopago=./conf_biopago/
+
+*--------------------------------------------------------------*
+* Configuración de la opcion que permite ejecutar procesos
+* con medio de pago Tarjeta que pueden procesar Donaciones.
+* active: Para indicador si la opcion esta disponible
+*		0 : inactiva
+*	    1 : activa
+* 
+*--------------------------------------------------------------*
+[donaciones]
+active=0
+
+cantTransacciones=23
+transaccion1=COMPRA_CREDITO,0
+transaccion2=COMPRA_CREDITO_MANUAL,0
+transaccion3=COMPRA_CREDITO_PRIVADO,0
+transaccion4=COMPRA_DEBITO,0
+transaccion5=VISA_ELECTRON_CREDITO,0
+transaccion6=VISA_ELECTRON_DEBITO,0
+transaccion7=CESTA_TICKET,0
+transaccion8=SODEXHO,0
+transaccion9=LEALTAD_CREDITO_BODDESCUENTO,0
+transaccion10=LEALTAD_DEBITO_BODDESCUENTO,0
+transaccion11=LEALTAD_CREDITO_JUNTOS,0
+transaccion12=LEALTAD_DEBITO_JUNTOS,0
+transaccion13=LEALTAD_CREDITO_PROVIMILLAS,0
+transaccion14=LEALTAD_DEBITO_PROVIMILLAS,0
+transaccion15=BIOPAGO_COMPRA,0
+transaccion16=OLBPOS_COMPRA,0
+transaccion17=OLBPOS_COMPRA_BIOPAGO,0
+transaccion18=OLBPOS_PAGO,0
+transaccion19=OLBPOS_PAGO_BIOPAGO,0
+transaccion20=AVANCE_RETIRO_CREDITO,0
+transaccion21=AVANCE_RETIRO_DEBITO,0
+transaccion22=COMPRA_AVANCE_CREDITO,0
+transaccion23=COMPRA_AVANCE_DEBITO,0
+
+*--------------------------------------------------------------*
+* Lista de productos de una confiteria que pueden ser 
+* adquridos en una transaccion de Canje Productos Cards
+* Estos datos son extraidos de la plataforma Cards por 
+* la consulta de Prodtcos
+*--------------------------------------------------------------*
+[lealtadMerchant]
+codigo=
+descripcion=
+
+
+[MERCANTIL]
+activo=0
+`,
+            vposo2d: `[vigenciaVersion]
+fecha=06/02/2026 15:01
+
+*-------------------------------------------------*
+*-------------------------------------------------*
+* CONFIGURACIONES GENERALES
+*---------------------------------------------------------------*
+* Tiempo limite de inactividad en la captura de datos.
+*---------------------------------------------------------------*
+[timerInactividadTransaccion]
+limite=30
+
+*--------------------------------------------------------------*
+*	Plantillas de voucher generados cuando no hay respuesta del MS
+*    - templateVoucherAprobado=Template cuando no se recibe voucher del MS y la trx fue aprobada
+*    - templateVoucherRechazado=Template a usar cuando no haya comunicacin con el MS
+*--------------------------------------------------------------*
+[vouchers-textos]
+templateVoucherAprobada=<LF><LF>|||ULTIMA TRANS APROBADA<LF>NO|SE|IMPRIMIO|VOUCHER|ORIG<LF><LF>@nombreAdquiriente@<LF>PAGO MOVIL<LF>@encabezado1@<LF>@localidad@<LF>RIF:@rif@ AFIL:@afiliacion@<LF>TER:@terminal@ LOTE:@lote@ REF:@referencia@<LF>NRO.TELEFONO:@telefono@<LF>FECHA||||:|@fechaMs@|@horaMs@|APROB:@authid@<LF>LOCALIDAD:|@localidad@<LF>SECUENCIA:@numSeq@ CAJA:@vtId@<LF>MONTO BS.  :@montoTransaccion@<LF><LF><CC>||||||COPIA CLIENTE</CC><LF><LF>NO|SE|ENCONTRO|VOUCHER|ASIGNADO|<LF>PARA|ESTA|TRANSACCION,|FAVOR|<LF>REPORTAR|AL|0212.507.76.00<LF><LF><LF>
+templateVoucherRechazada=<LF><LF>|||ULTIMA|TRANS|PROCESADA<LF><LF>NO|SE|IMPRIMIO|VOUCHER|ORIG<LF><LF>@producto@<LF><LF>FECHA||||:|@fechaMs@|@horaMs@<LF>LOCALIDAD:|@localidad@<LF>RIF||||||:|@rif@<LF>CAJA|||||:|@vtId@<LF>SECUENCIA:|@numSeq@<LF>MONTO||||:|@montoTransaccion@<LF><LF>TRANSACCION FALLIDA:@respCode@<LF>@detalle@<LF><LF><CC>||||||COPIA|CLIENTE|</CC><LF><LF>NO|SE|ENCONTRO|VOUCHER|ASIGNADO<LF>PARA|ESTA|TRANSACCION,FAVOR<LF>REPORTAR|AL|0212.507.76.00<LF><LF><LF>
+templateVoucherRechazadaAnulada=<LF><LF>|||ULTIMA|TRANS|PROCESADA<LF><LF>NO|SE|IMPRIMIO|VOUCHER|ORIG<LF><LF>@producto@<LF><LF>FECHA||||:|@fechaMs@|@horaMs@<LF>LOCALIDAD:|@localidad@<LF>RIF||||||:|@rif@<LF>CAJA|||||:|@vtId@<LF>SECUENCIA:|@numSeq@<LF>TRANSACCION FALLIDA:@respCode@<LF>@detalle@<LF><LF><CC>||||||COPIA|CLIENTE|</CC><LF><LF>NO|SE|ENCONTRO|VOUCHER|ASIGNADO<LF>PARA|ESTA|TRANSACCION,FAVOR<LF>REPORTAR|AL|0212.507.76.00<LF><LF><LF>
+templateVoucherCambioAdvice=<LF><LF>|||||||||PAGO MOVIL<LF><LF>@encabezado1@<LF>@localidad@<LF>RIF:@rif@<LF>NRO.TELEFONO:@telefono@<LF>FECHA:@fechaMs@|@horaMs@<LF>SECUENCIA:@numSeq@|CAJA:@vtId@<LF>@detalle@<LF>PRONTO|VERA|REFLEJADO|EL|PAGO<LF><LF><CC>||||||COPIA|CLIENTE|</CC><LF><LF><LF>
+templateVoucherCambioPetroAdvice=<LF><LF>||||||||||SUNACRIP<LF>||||||||C@MBIO|PETRO<LF><LF>@encabezado1@<LF>@localidad@<LF>RIF:|@rif@<LF>CID:|@cid@<LF>FECHA:|@fechaMs@|@horaMs@<LF>SECUENCIA:|@numSeq@|CAJA:|@vtId@<LF>@detalle@<LF>PRONTO|VERA|REFLEJADO|EL|PAGO<LF><LF><CC>||||||COPIA|CLIENTE|</CC><LF><LF><LF>
+templateVoucherCambioQponAdvice=<LF><LF>||||||||||SUNACRIP<LF>||||||C@MBIO|PETRO|QPON<LF><LF>@encabezado1@<LF>@localidad@<LF>RIF:|@rif@<LF>CID:|@cid@<LF>FECHA:|@fechaMs@|@horaMs@<LF>SECUENCIA:|@numSeq@|CAJA:|@vtId@<LF>@detalle@<LF>PRONTO|VERA|REFLEJADO|EL|PAGO<LF><LF><CC>||||||COPIA|CLIENTE|</CC><LF><LF><LF>
+
+*-------------------------------------------------*
+* Lista de Tipos de Identificacion.
+*-------------------------------------------------*
+[tipoIdentificacion]
+codTipoI=0,1,2,3,4,5,6
+descTipoI=Natural,Jurdico,Pasaporte,Extranjero,Gobierno,Comuna,Firma Personal
+valorTipoI=V,J,P,E,G,C,R
+*-------------------------------------------------*
+* Tokenizador.
+*-------------------------------------------------*
+[token]
+active=0
+tokenizadorUsuario=0
+url=
+key=
+urlCliente=
+*-------------------------------------------------*
+* Lista de Areas Telefonicas
+*-------------------------------------------------*
+[areasTelefonos]
+cdoAreaT= ,0412,0422,0414,0424,0416,0426
+
+*-------------------------------------------------*
+*-------------------------------------------------*
+* CONFIGURACION C2P Y P2C (Compra y C@mbio)
+*-------------------------------------------------*
+* Identificador de bancos adquiriente de C2P.
+*-------------------------------------------------*
+[acqcodec2p]
+cant=33
+acqcodec2p1=0000,   
+acqcodec2p2=0156,100% Banco
+acqcodec2p3=0171,Activo
+acqcodec2p4=0916,Agil
+acqcodec2p5=0166,Agricola de Venezuela
+acqcodec2p6=0172,Bancamiga
+acqcodec2p7=0114,BanCaribe
+acqcodec2p8=0168,BanCrecer
+acqcodec2p9=0134,Banesco
+acqcodec2p10=0174,Banplus
+acqcodec2p11=0175,BDT
+acqcodec2p12=0151,BFC
+acqcodec2p13=0128,Caroni
+acqcodec2p14=0163,del Tesoro
+acqcodec2p15=0157,DelSur
+acqcodec2p16=0115,Exterior
+acqcodec2p17=0177,Fuerza Armada Nacional
+acqcodec2p18=0146,Gente Emprendedora C.A
+acqcodec2p19=0917,Humaniz
+acqcodec2p20=0173,Int. de Desarrollo
+acqcodec2p21=0105,Mercantil
+acqcodec2p22=0169,R4 Banco
+acqcodec2p23=0905,Mpandco
+acqcodec2p24=0914,Mueve
+acqcodec2p25=0903,MultiPagos
+acqcodec2p26=0178,N58
+acqcodec2p27=0191,Nacional de Credito
+acqcodec2p28=0138,Plaza
+acqcodec2p29=0108,Provincial
+acqcodec2p30=0137,Sofitasa
+acqcodec2p31=0104,Venezolano de Credito
+acqcodec2p32=0102,Venezuela
+acqcodec2p33=0911,Venmo
+*------------------------------------------------*
+* Identificador de bancos adquiriente de P2C.
+* -----------------------------------------------*
+[acqcodep2c]
+cant=33
+acqcodep2c1=0000,   
+acqcodep2c2=0156,100% Banco
+acqcodep2c3=0171,Activo
+acqcodep2c4=0916,Agil
+acqcodep2c5=0166,Agricola de Venezuela
+acqcodep2c6=0172,Bancamiga
+acqcodep2c7=0114,BanCaribe
+acqcodep2c8=0168,BanCrecer
+acqcodep2c9=0134,Banesco
+acqcodep2c10=0174,Banplus
+acqcodep2c11=0175,BDT
+acqcodep2c12=0151,BFC
+acqcodep2c13=0128,Caroni
+acqcodep2c14=0163,del Tesoro
+acqcodep2c15=0157,DelSur
+acqcodep2c16=0115,Exterior
+acqcodep2c17=0177,Fuerza Armada Nacional
+acqcodep2c18=0146,Gente Emprendedora C.A
+acqcodep2c19=0917,Humaniz
+acqcodep2c20=0173,Int. de Desarrollo
+acqcodep2c21=0105,Mercantil
+acqcodep2c22=0169,R4 Banco
+acqcodep2c23=0905,Mpandco
+acqcodep2c24=0914,Mueve
+acqcodep2c25=0903,MultiPagos
+acqcodep2c26=0178,N58
+acqcodep2c27=0191,Nacional de Credito
+acqcodep2c28=0138,Plaza
+acqcodep2c29=0108,Provincial
+acqcodep2c30=0137,Sofitasa
+acqcodep2c31=0104,Venezolano de Credito
+acqcodep2c32=0102,Venezuela
+acqcodep2c33=0911,Venmo
+*------------------------------------------------------*
+* Identificador de imagenes de banco para tokenizador
+* (C2P, P2C, C@mbio P2X, Dbito Inmediato)
+*------------------------------------------------------*
+[acqcodec2pFarmatodo]
+cant=33
+acqcodec2pFarmatodo1=0000, 
+acqcodec2pFarmatodo2=0156,./conf/Imagenes/100Banco.png
+acqcodec2pFarmatodo3=0171,./conf/Imagenes/Activo.png
+acqcodec2pFarmatodo4=0916,./conf/Imagenes/Agil.png
+acqcodec2pFarmatodo5=0166,./conf/Imagenes/AgricoladeVenezuela.png
+acqcodec2pFarmatodo6=0172,./conf/Imagenes/Bancamiga.png
+acqcodec2pFarmatodo7=0114,./conf/Imagenes/BanCaribe.png
+acqcodec2pFarmatodo8=0168,./conf/Imagenes/BanCrecer.png
+acqcodec2pFarmatodo9=0134,./conf/Imagenes/Banesco.png
+acqcodec2pFarmatodo10=0174,./conf/Imagenes/Banplus.png
+acqcodec2pFarmatodo11=0175,./conf/Imagenes/BDT.png
+acqcodec2pFarmatodo12=0151,./conf/Imagenes/BFC.png
+acqcodec2pFarmatodo13=0128,./conf/Imagenes/Caroni.png
+acqcodec2pFarmatodo14=0163,./conf/Imagenes/BancodelTesoro.png
+acqcodec2pFarmatodo15=0157,./conf/Imagenes/BancodelSur.png
+acqcodec2pFarmatodo16=0115,./conf/Imagenes/Exterior.png
+acqcodec2pFarmatodo17=0177,./conf/Imagenes/FuerzaArmadaNacional.png
+acqcodec2pFarmatodo18=0146,./conf/Imagenes/GenteEmprendedora.png
+acqcodec2pFarmatodo19=0917,./conf/Imagenes/Humaniz.png
+acqcodec2pFarmatodo20=0173,./conf/Imagenes/IntdeDesarrollo.png
+acqcodec2pFarmatodo21=0105,./conf/Imagenes/Mercantil.png
+acqcodec2pFarmatodo22=0169,./conf/Imagenes/R4Banco.png
+acqcodec2pFarmatodo23=0905,./conf/Imagenes/Mpandco.png
+acqcodec2pFarmatodo24=0914,./conf/Imagenes/Mueve.png
+acqcodec2pFarmatodo25=0903,./conf/Imagenes/MultiPagos.png
+acqcodec2pFarmatodo26=0178,./conf/Imagenes/N58Banco.png
+acqcodec2pFarmatodo27=0191,./conf/Imagenes/NacionaldeCreditos.jpg
+acqcodec2pFarmatodo28=0138,./conf/Imagenes/Plaza.png
+acqcodec2pFarmatodo29=0108,./conf/Imagenes/Provincial.png
+acqcodec2pFarmatodo30=0137,./conf/Imagenes/Sofitasa.png
+acqcodec2pFarmatodo31=0104,./conf/Imagenes/VenezolanodeCredito.png
+acqcodec2pFarmatodo32=0102,./conf/Imagenes/Venezuela.png
+acqcodec2pFarmatodo33=0911,./conf/Imagenes/Venmo.png
+*---------------------------------------------------------------*
+*  Tipo de Moneda para pago con P2C
+*---------------------------------------------------------------*
+[parmMonedaP2C]
+monedaP2C=VES,USD,EUR
+monedaP2CValor=10,40,90
+*---------------------------------------------------------------*
+*	Tipo de moneda usada en C@mbio P2C
+*     tipoMonedaO2D=Prepago Bs.,Prepago Dolares,Prepago Euros
+*     tipoMonedaO2DValor=5,4,9
+*---------------------------------------------------------------*
+[parmO2DVuelto]
+tipoMonedaO2D=VES,EUR,USD
+tipoMonedaO2DValor=928,978,840
+*--------------------------------------------------------------*
+* Indicador de campo editable Tipo de Moneda
+* para transacciones de C@mbio P2C
+* active : 
+*	0 : no editable
+*   	1 : editable
+*--------------------------------------------------------------*
+[monedaP2CVuelto]
+active=0
+* ----------------------------------------------------- *
+* Bancos Destino para la Trx P2C                        *
+*                                                       *
+*  cant    : cantidad de bancos/tlf registrados         *
+*  cantVisible: cantidad de bancos/tlf que se muestra a *
+*         la vez en pantalla. NOTA: configurar un nmero*
+*         muy alto puede ocasionar que el formulario no *
+*         se muestre correctamente.                     *
+*  acqcodeTlfp2cX : CODIGO_BANCO,NOMBRE_BANCO TELEFONO  *
+*  CODIGO_BANCO   -- Codigo de Adquiriente              *
+*  BANCO-TELEFONO --                                    *
+*    NOMBRE_BANCO -- Texto a mostrar en la lista        *
+*                    - (separador)                      *
+*    TELEFONO --     Codigo de Area                     *
+*                    - (separador)                      *
+*                    Numero de Telefono                 *
+* 0000#00000000000,xxxxx - 0000-0000000                 *
+* ------------------------------------------------------*
+[acqcodeTlfp2c]
+cant=1
+cantVisible=5
+acqcodeTlfp2c1=0115#04140000000,Exterior - 0414-0000000
+*--------------------------------------------------------------*
+* Indicador para activar o desactivar campo OTP en P2C
+*--------------------------------------------------------------*
+[parmOTPP2C]
+required=0
+active=0
+*--------------------------------------------------------------*
+* Indicador para habilitar la modificacin de moneda de pago en P2C
+*--------------------------------------------------------------*
+[monedaPagoP2C]
+active=1
+
+* ---------------------------------------------- *
+* ---------------------------------------------- *
+* CONFIGURACION ZELLE
+* ---------------------------------------------- *
+* Identificador de bancos adquiriente de Zelle*
+* -----------------------------------------------*
+[acqcodeZelle]
+cant=11
+acqcodeZelle1=MNBM,Amerant Bank
+acqcodeZelle2=BOFA,Bank of America
+acqcodeZelle3=BBUB,Banesco USA
+acqcodeZelle4=NFBK,Capital One
+acqcodeZelle5=CHAS,Chase Bank
+acqcodeZelle6=CITI,Citibank
+acqcodeZelle7=FTBC,Firts Third Bank
+acqcodeZelle8=MRMD,HSBC
+acqcodeZelle9=PNCC,PNC Bank
+acqcodeZelle10=USBK,US Bank
+acqcodeZelle11=WFBI,Wells Fargo Bank
+*--------------------------------------------------------------*
+*	Tipo de moneda usada en Zelle
+*--------------------------------------------------------------*
+[parmMonedaZelle]
+monedaZelle=VES,USD
+monedaZelleValor=928,840
+
+* ---------------------------------------------- *
+* ---------------------------------------------- *
+* CONFIGURACION C@mbio PRIVADO
+* ---------------------------------------------- *
+* Identificador de bancos adquiriente de C@mbio
+* Privado
+* -----------------------------------------------*
+[acqcodevueltoprivado]
+cant=4
+acqcodevueltoprivado1=0000,   
+acqcodevueltoprivado2=0174,Banplus Pay
+acqcodevueltoprivado3=0172,Bancamiga
+acqcodevueltoprivado4=0169,R4 Banco
+*---------------------------------------------------------------*
+*	Tipo de moneda usada en Vuelto Privado
+*---------------------------------------------------------------*
+[parmPrivadoVuelto]
+tipoMonedaPrivado=VES,USD,EUR
+tipoMonedaPrivadoValor=928,840,978
+*---------------------------------------------------------------*
+*	Cuentas Destino para Vuelto Privado
+*---------------------------------------------------------------*
+[parmCtaVueltoPrivado]
+tipoCuentaVueltoPrivado=Bolivares,Dolares,Euros
+tipoCuentaVueltoPrivadoValor=10,40,90
+
+* ---------------------------------------------- *
+* ---------------------------------------------- *
+* CONFIGURACION LIBREPAGO
+* ---------------------------------------------- *
+* Identificador de bancos adquiriente de Librepago
+* -----------------------------------------------*
+[acqcodevueltolibrepago]
+cant=2
+acqcodevueltolibrepago1=0000,   
+acqcodevueltolibrepago2=0169,R4 Banco
+
+
+* ---------------------------------------------- *
+* ---------------------------------------------- *
+* CONFIGURACION CREDITO INMEDIATO
+* ---------------------------------------------- *
+* Cuentas Registradas para Transferencia         *
+*                                                *
+*  cant    : cantidad de cuentas registradas     *
+*  ctaCltx : CUENTA_CLIENTE,NOMBRE_CUENTA        *
+*  CUENTA_CLIENTE   -- Nro de Cuenta Bancaria    *
+*  NOMBRE_CUENTA  -- Texto a mostrar en la lista *
+*  
+* 00000000000000000000,NOMBRE_CUENTA
+* -----------------------------------------------*
+[parmCtaTransferencia]
+cant=1
+ctaClt1=00000000000000000000,CUENTA_TRANS
+*--------------------------------------------------------------*
+* Indicador para activar o desactivar campo OTP para C. Inmediato
+*--------------------------------------------------------------*
+[parmOTPCInmediato]
+required=0
+active=0
+
+
+* ---------------------------------------------- *
+* ---------------------------------------------- *
+* CONFIGURACION DEPOSITO
+* ---------------------------------------------- *
+* Cuentas Registradas para Deposito		 *
+*                                                *
+*  cant    : cantidad de cuentas registradas     *
+*  ctaCltx : CUENTA_CLIENTE,NOMBRE_CUENTA        *
+*  CUENTA_CLIENTE   -- Nro de Cuenta Bancaria    *
+*  NOMBRE_CUENTA  -- Texto a mostrar en la lista *
+*  
+* 00000000000000000000,NOMBRE_CUENTA
+* -----------------------------------------------*
+[parmCtaDeposito]
+cant=1
+ctaClt1=00000000000000000000,NOMBRE_CUENTA
+
+
+* ---------------------------------------------- *
+* ---------------------------------------------- *
+* CONFIGURACION DEBITO INMEDIATO
+*--------------------------------------------------------------*
+* Indicador del tipo de dato de cliente que aparecer en formulario
+*--------------------------------------------------------------*
+[parmDebitoInmediato]
+cuenta=1
+telefono=1
+*--------------------------------------------------------------*
+* Indicador para activar o desactivar la solicitud de Nombre
+*--------------------------------------------------------------*
+[nombreDebitoInmediato]
+active=0
+
+`
+        };
+
+        // Current modified line arrays
+        const fileLines = {
+            vposconf: rawTemplates.vposconf.split(/\r?\n/),
+            vposuniversal: rawTemplates.vposuniversal.split(/\r?\n/),
+            vposo2d: rawTemplates.vposo2d.split(/\r?\n/)
+        };
+
+        // Fields mentioned in the installation guide
+        const compactFields = {
+            vposconf: {
+                'server': ['host', 'port'],
+                'vtid': ['vtid', 'id'],
+                'pinpad': ['puerto'],
+                'pinpad-verifone': ['modelo', 'puerto', 'comandosNuevos', 'tipoPinblock', 'dataSensibleEncriptada'],
+                'voucher': ['copias']
+            },
+            vposuniversal: {
+                'cierrevoucher': ['imprimirTransacciones'],
+                'transaccionespermitidas': ['activo0', 'activo1', 'activo17'],
+                'COMPRA_MEDIOS_PAGO': ['activo0', 'activo2', 'activo3']
+            },
+            vposo2d: {
+                'acqcodeTlfp2c': ['cant', 'cantVisible', 'acqcodeTlfp2c1']
+            }
+        };
+
+        // Active state
+        let currentTab = 'vposconf';
+        let previewMode = 'total'; // 'total' or 'compact'
+
+        // Ini update engine that preserves comments and formatting
+        function updateIniValue(fileName, sectionName, keyName, newValue) {
+            const lines = fileLines[fileName];
+            let currentSection = null;
+            let updated = false;
+
+            for (let i = 0; i < lines.length; i++) {
+                let line = lines[i].trim();
+                
+                // Track current section
+                if (line.startsWith('[') && line.endsWith(']')) {
+                    currentSection = line.substring(1, line.length - 1).trim();
+                } else if (currentSection === sectionName && line.includes('=')) {
+                    let parts = line.split('=');
+                    let key = parts[0].trim();
+                    if (key === keyName) {
+                        let eqIndex = lines[i].indexOf('=');
+                        let prefix = lines[i].substring(0, eqIndex + 1);
+                        lines[i] = prefix + ' ' + newValue;
+                        updated = true;
+                        break;
+                    }
+                }
+            }
+            
+            // Re-render active code block preview
+            if (currentTab === fileName) {
+                renderPreview();
+            }
+        }
+
+        // Parse key-values from existing file to pre-populate inputs
+        function parseIniToInputs(fileName, textContent) {
+            const lines = textContent.split(/\r?\n/);
+            fileLines[fileName] = [...lines]; // Save exact lines structure
+            
+            let currentSection = null;
+
+            for (let i = 0; i < lines.length; i++) {
+                let line = lines[i].trim();
+                if (line.startsWith('[') && line.endsWith(']')) {
+                    currentSection = line.substring(1, line.length - 1).trim();
+                } else if (currentSection && line.includes('=')) {
+                    let parts = line.split('=');
+                    let key = parts[0].trim();
+                    let value = parts.slice(1).join('=').trim();
+                    
+                    // Find corresponding HTML input and update it
+                    let elementId = getInputElementId(fileName, currentSection, key);
+                    let element = document.getElementById(elementId);
+                    if (element) {
+                        if (element.type === 'checkbox') {
+                            element.checked = (value === '1');
+                        } else {
+                            element.value = value;
+                        }
+                    }
+                }
+            }
+
+            renderPreview();
+        }
+
+        // Map section and key to input elements IDs
+        function getInputElementId(fileName, section, key) {
+            if (fileName === 'vposconf') {
+                if (section === 'server' && key === 'host') return 'conf-server-host';
+                if (section === 'server' && key === 'port') return 'conf-server-port';
+                if (section === 'vtid' && key === 'vtid') return 'conf-vtid-vtid';
+                if (section === 'vtid' && key === 'id') return 'conf-vtid-id';
+                if (section === 'pinpad' && key === 'puerto') return 'conf-pinpad-puerto';
+                if (section === 'pinpad-verifone' && key === 'modelo') return 'conf-verifone-modelo';
+                if (section === 'pinpad-verifone' && key === 'puerto') return 'conf-verifone-puerto';
+                if (section === 'pinpad-verifone' && key === 'comandosNuevos') return 'conf-verifone-comandos';
+                if (section === 'pinpad-verifone' && key === 'tipoPinblock') return 'conf-verifone-pinblock';
+                if (section === 'pinpad-verifone' && key === 'dataSensibleEncriptada') return 'conf-verifone-sensible';
+                if (section === 'voucher' && key === 'tienda') return 'conf-voucher-tienda';
+                if (section === 'voucher' && key === 'copias') return 'conf-voucher-copias';
+                if (section === 'voucher' && key === 'LineaEncabezado4') return 'conf-voucher-rif';
+                if (section === 'voucher' && key === 'LineaEncabezado7') return 'conf-voucher-telf';
+                if (section === 'voucher' && key === 'LineaEncabezado8') return 'conf-voucher-nota';
+            } else if (fileName === 'vposuniversal') {
+                if (section === 'cierrevoucher' && key === 'imprimirTransacciones') return 'univ-cierre-imp';
+                if (section === 'cierrevoucher' && key === 'maxCaracterImpresion') return 'univ-cierre-max';
+                if (section === 'cierrevoucher' && key === 'alineacionTexto') return 'univ-cierre-align';
+                if (section === 'cierrevoucher' && key === 'detalle') return 'univ-cierre-det';
+                if (section === 'transaccionespermitidas' && key === 'activo0') return 'univ-tx-tarjeta';
+                if (section === 'transaccionespermitidas' && key === 'activo1') return 'univ-tx-cambio';
+                if (section === 'transaccionespermitidas' && key === 'activo17') return 'univ-tx-otros';
+                if (section === 'COMPRA_MEDIOS_PAGO' && key === 'activo0') return 'univ-medio-tarjeta';
+                if (section === 'COMPRA_MEDIOS_PAGO' && key === 'activo2') return 'univ-medio-c2p';
+                if (section === 'COMPRA_MEDIOS_PAGO' && key === 'activo3') return 'univ-medio-p2c';
+            } else if (fileName === 'vposo2d') {
+                if (section === 'acqcodeTlfp2c' && key === 'acqcodeTlfp2c1') return 'o2d-p2c-cuenta';
+                if (section === 'acqcodeTlfp2c' && key === 'cant') return 'o2d-p2c-cant';
+                if (section === 'acqcodeTlfp2c' && key === 'cantVisible') return 'o2d-p2c-visible';
+                if (section === 'parmOTPP2C' && key === 'required') return 'o2d-otp-required';
+                if (section === 'parmOTPP2C' && key === 'active') return 'o2d-otp-active';
+                if (section === 'monedaPagoP2C' && key === 'active') return 'o2d-moneda-pago';
+            }
+            return null;
+        }
+
+        // Initialize inputs from default lines
+        function initInputs() {
+            Object.keys(fileLines).forEach(fileName => {
+                const textContent = fileLines[fileName].join('\n');
+                parseIniToInputs(fileName, textContent);
+            });
+        }
+
+        // Handle text change inside form inputs
+        function updateField(fileName, section, key, value) {
+            updateIniValue(fileName, section, key, value);
+        }
+
+        // Tab Switching
+        function switchTab(tabName) {
+            currentTab = tabName;
+            
+            // Update tabs layout
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById('tab-' + tabName).classList.add('active');
+
+            // Update forms layout
+            document.querySelectorAll('.form-section').forEach(sect => sect.classList.remove('active'));
+            document.getElementById('form-' + tabName).classList.add('active');
+
+            // Update preview pane header filename
+            document.getElementById('preview-filename').innerText = tabName + '.ini';
+
+            renderPreview();
+        }
+
+        // Interactive Stepper manual scroll & active state
+        function activateStep(stepNum, tabName) {
+            // Update card styling
+            document.querySelectorAll('.step-card').forEach((card, index) => {
+                if (index === (stepNum - 1)) {
+                    card.classList.add('active');
+                    card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                } else {
+                    card.classList.remove('active');
+                }
+            });
+
+            // Switch to the appropriate tab automatically
+            if (tabName) {
+                switchTab(tabName);
+            }
+        }
+
+        // Toggle Preview Mode (Total vs Compact)
+        function setPreviewMode(mode) {
+            previewMode = mode;
+            document.getElementById('toggle-total').classList.toggle('active', mode === 'total');
+            document.getElementById('toggle-compact').classList.toggle('active', mode === 'compact');
+            renderPreview();
+        }
+
+        // Generate filtered preview text for Compact mode
+        function getCompactText(fileName) {
+            const lines = fileLines[fileName];
+            const config = compactFields[fileName];
+            let compactLines = [];
+            let currentSection = null;
+            let sectionLines = [];
+            let sectionMatched = false;
+
+            for (let i = 0; i < lines.length; i++) {
+                let rawLine = lines[i];
+                let line = rawLine.trim();
+                
+                if (line.startsWith('[') && line.endsWith(']')) {
+                    if (sectionMatched && sectionLines.length > 0) {
+                        compactLines.push(...sectionLines);
+                        compactLines.push('');
+                    }
+                    currentSection = line.substring(1, line.length - 1).trim();
+                    sectionLines = [rawLine];
+                    sectionMatched = false;
+                } else if (currentSection && config[currentSection] && line.includes('=')) {
+                    let parts = line.split('=');
+                    let key = parts[0].trim();
+                    if (config[currentSection].includes(key)) {
+                        sectionLines.push(rawLine);
+                        sectionMatched = true;
+                    }
+                }
+            }
+            if (sectionMatched && sectionLines.length > 0) {
+                compactLines.push(...sectionLines);
+            }
+            
+            return compactLines.join('\n').trim();
+        }
+
+        // INI regex syntax highlighter
+        function highlightIni(text) {
+            const lines = text.split('\n');
+            const highlightedLines = lines.map(line => {
+                let trimmed = line.trim();
+                if (trimmed.startsWith('*') || trimmed.startsWith(';')) {
+                    return `<span class="ini-comment">${escapeHtml(line)}</span>`;
+                }
+                if (trimmed.startsWith('[') && trimmed.endsWith(']')) {
+                    return `<span class="ini-section">${escapeHtml(line)}</span>`;
+                }
+                if (line.includes('=')) {
+                    let parts = line.split('=');
+                    let key = parts[0];
+                    let val = parts.slice(1).join('=');
+                    return `<span class="ini-key">${escapeHtml(key)}</span><span class="ini-equal">=</span><span class="ini-value">${escapeHtml(val)}</span>`;
+                }
+                return escapeHtml(line);
+            });
+            return highlightedLines.join('\n');
+        }
+
+        function escapeHtml(text) {
+            return text
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        // Render code snippet inside preview area
+        function renderPreview() {
+            let textContent;
+            if (previewMode === 'compact') {
+                textContent = getCompactText(currentTab);
+            } else {
+                textContent = fileLines[currentTab].join('\n');
+            }
+            document.getElementById('code-block').innerHTML = highlightIni(textContent);
+        }
+
+        // Import local file via input
+        document.getElementById('ini-file-input').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                const text = evt.target.result;
+                const fileName = file.name.toLowerCase();
+                
+                let targetTab = null;
+                if (fileName.includes('conf')) targetTab = 'vposconf';
+                else if (fileName.includes('universal')) targetTab = 'vposuniversal';
+                else if (fileName.includes('o2d')) targetTab = 'vposo2d';
+
+                if (targetTab) {
+                    parseIniToInputs(targetTab, text);
+                    switchTab(targetTab);
+                    showToast('¡Archivo ' + file.name + ' importado con éxito!');
+                } else {
+                    showToast('Error: El archivo debe ser vposconf.ini, vposuniversal.ini o vposo2d.ini', true);
+                }
+            };
+            reader.readAsText(file);
+        });
+
+        // Copy active text content to clipboard (always copies the full file!)
+        function copyToClipboard() {
+            const text = fileLines[currentTab].join('\n');
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('¡Contenido total de ' + currentTab + '.ini copiado!');
+            }).catch(err => {
+                showToast('Error al copiar al portapapeles', true);
+            });
+        }
+
+        // Download active .ini file (always downloads the full file!)
+        function downloadActiveFile() {
+            const text = fileLines[currentTab].join('\n');
+            const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = currentTab + '.ini';
+            link.click();
+            URL.revokeObjectURL(link.href);
+            showToast('Descargando ' + currentTab + '.ini completo...');
+        }
+
+        // Download all 3 files as separate downloads (always downloads full files!)
+        function downloadAllFiles() {
+            Object.keys(fileLines).forEach(key => {
+                const text = fileLines[key].join('\n');
+                const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = key + '.ini';
+                setTimeout(() => {
+                    link.click();
+                    URL.revokeObjectURL(link.href);
+                }, 150);
+            });
+            showToast('Descargando los 3 archivos .ini completos...');
+        }
+
+        // Display Toast Notification
+        function showToast(message, isError = false) {
+            const toast = document.getElementById('toast-notif');
+            toast.innerText = message;
+            if (isError) {
+                toast.style.background = '#ef4444';
+                toast.style.boxShadow = '0 4px 15px rgba(239, 68, 68, 0.3)';
+            } else {
+                toast.style.background = 'var(--accent)';
+                toast.style.boxShadow = '0 4px 15px rgba(16, 185, 129, 0.3)';
+            }
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Start
+        window.addEventListener('DOMContentLoaded', () => {
+            initInputs();
+            renderPreview();
+        });
+    </script>
+</body>
+</html>
